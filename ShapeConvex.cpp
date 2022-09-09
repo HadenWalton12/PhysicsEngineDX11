@@ -121,7 +121,7 @@ Mat3 ShapeConvex::InertiaTensor()
 }
 
 
-//Getting bounds is used to define the boundaries for shape,, applying it to corners while adding the orientation to accurately define these points
+//Getting bounds is used to define the boundaries for shape, applying it to corners while adding the orientation to accurately define these points
 Bounds ShapeConvex::GetBounds(const Vec3& position, const Quat& orientation) const
 {
 	Vec3 corners[8];
@@ -146,6 +146,21 @@ Bounds ShapeConvex::GetBounds(const Vec3& position, const Quat& orientation) con
 
 	return bounds;
 }
+
+Bounds ShapeConvex::GetBounds() const
+{
+	return _BoxBounds;
+}
+
+Shape::ShapeType ShapeConvex::GetType() const
+{
+	return _ShapeType;
+}
+
+
+
+
+
 
 void  ShapeConvex::AddPoint(std::vector<Vec3>& hull_points, std::vector<tri_t>& hull_triangles, const Vec3& point)
 {
@@ -967,9 +982,9 @@ Vec4 SignedVolume3D(const Vec3& s1, const Vec3& s2, const Vec3& s3, const Vec3& 
 
 	Vec4 C4;
 	C4[0] = matrix.Cofactor(3, 0);
-	C4[0] = matrix.Cofactor(3, 1);
-	C4[0] = matrix.Cofactor(3, 2);
-	C4[0] = matrix.Cofactor(3, 3);
+	C4[1] = matrix.Cofactor(3, 1);
+	C4[2] = matrix.Cofactor(3, 2);
+	C4[3] = matrix.Cofactor(3, 3);
 
 	const float determinant_matrix = C4[0] + C4[1] + C4[2] + C4[3];
 
@@ -1032,7 +1047,7 @@ void TestSignedVolumeProjection()
 		points[i] = original_points[i] + Vec3(1.0f, 1.0f, 1.0f);
 	}
 
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
+	lambdas = SignedVolume3D(points[0], points[1] , points[2] , points[3]);
 	v.Zero();
 
 	for (int i = 0; i < 4; i++)
@@ -1040,78 +1055,35 @@ void TestSignedVolumeProjection()
 		v += points[i] * lambdas[i];
 	}
 
-	//Print Function
-	//
-	//
-	//
-	///
+	//print function here
 
-	for (int i = 0; i < 4; i++){points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f) * 0.25;}
+
+	for (int i = 0; i < 4; i++)
+	{
+		points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f) * 0.25f;
+
+	}
 	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
 	v.Zero();
-	for (int i = 0; i < 4; i++){v += points[i] * lambdas[i];}
-	
-	//Print Function
-	//
-	//
-	//
-	///
+	for (int i = 0; i < 4; i++)
+	{
+		v += points[i] * lambdas[i];
+	}
 
-	for (int i = 0; i < 4; i++) { points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f) ; }
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
-	v.Zero();
-	for (int i = 0; i < 4; i++) { v += points[i] * lambdas[i]; }
+	for (int i = 0; i < 4; i++)
+	{
+		points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f) ;
 
-	//Print Function
-	//
-	//
-	//
-	///
-
-	for (int i = 0; i < 4; i++) { points[i] = original_points[i] + Vec3(1.0f, 1.0f, -0.5f); }
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
-	v.Zero();
-	for (int i = 0; i < 4; i++) { v += points[i] * lambdas[i]; }
-	//Print Function
-	//
-	//
-	//
-	///
-
-	points[0] = Vec3(51.1996613f , 26.19896123f , 1.91339576f);
-	points[1] = Vec3(-51.0567360f , -26.056581f , -0.436143428f );
-	points[2] = Vec3(50.8978920f , -24.1035538f , -1.04042661f);
-	points[3] = Vec3(-49.1021080f , 25.8964462f , -1.04042661f);
-	
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
-	v.Zero();
-	for (int i = 0; i < 4; i++) { v += points[i] * lambdas[i]; }
-
-	//Print Function
-
-
+	}
 }
 
-//If we are projecting the origin onto all sides of each simplex
-//it is nesssecary to do this ,GJK is an iterative
-//algorithm , meaning that the simplex buikds up over time,  
-// we will not need to check older parts of the simplex
-//since they were checked in previous iterations during the
-//algorithms execution
 
 
-//GJK - Refering back to the minkowski sum , the sum/difference
-//of to convex shapes can be used to easily determine if they interesect
-//from this , we dont need to build the entire minkowski difference
-//to find out if the intersection has occured .
+/*
+* Page 31-32
+	Simplex Signed Volumes
 
-//We simole need the build the simplex that contains the origin, using
-//this as the total sum for the caculation
-//increases performmance when the object intersect]
-//when the object doesnt intersect, it cancels out the algorithm
-//exuection 
+	Projects the origin onto the simplex to acquire the new direction , checks futher if the origin is inside the simplex
+	
 
-//Earlier , we built the convex hull from a set of points, we
-//would first find the point that was furthest in a particular direction
-//this is mentioned as a support point, these 
-//support points will become important to GJK algorithm 
+*/

@@ -257,6 +257,9 @@
     <ClCompile Include="ShapeConvex.cpp">
       <Filter>SourceFiles\Physics\Shape</Filter>
     </ClCompile>
+    <ClCompile Include="Shape.cpp">
+      <Filter>SourceFiles\Physics\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

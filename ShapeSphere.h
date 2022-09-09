@@ -16,6 +16,7 @@ public:
 		_CentreOfMass.Zero();
 
 		//Sets Up THe Object Bound To THis Shape , Replacing having to individualy define a shape in a scene class to the same length as this
+		//needed for the shape system to bind to our DX11 drawing system
 		_Object = new Object(render, L"Floor.dds", tex, "sphere.Obj");
 		_Object->SetSurface(surface.Ambient, surface.Diffuse, surface.Specular, surface.SpecularPower);
 
@@ -35,8 +36,10 @@ public:
 
 
 	Mat3 InertiaTensor() override;
+
 	Bounds GetBounds(const Vec3& pos, const Quat& orient)  const override;
 	Bounds GetBounds() const override;
+	
 	ShapeType GetType() const override;
 
 };
