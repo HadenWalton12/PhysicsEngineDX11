@@ -4,12 +4,7 @@
 #include "Quanternion.h"
 #include "Bounds.h"
 
-
-
-
 //Parent class hold all reference to the key invidual segments of each class. Each child shape class will hold attritbutes inate to the shape.
-
-
 class Shape
 {
 public:

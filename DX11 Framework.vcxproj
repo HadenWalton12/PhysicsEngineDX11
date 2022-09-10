@@ -379,6 +379,7 @@
     <ClCompile Include="Collision.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="DirectX.cpp" />
+    <ClCompile Include="GJK.cpp" />
     <ClCompile Include="IMGui\imgui.cpp" />
     <ClCompile Include="IMGui\imgui_draw.cpp" />
     <ClCompile Include="IMGui\imgui_impl_dx11.cpp" />
@@ -411,6 +412,7 @@
     <ClInclude Include="ConstantStructure.h" />
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DirectX.h" />
+    <ClInclude Include="GJK.h" />
     <ClInclude Include="IMGuiManager.h" />
     <ClInclude Include="IMGui\imconfig.h" />
     <ClInclude Include="IMGui\imgui.h" />

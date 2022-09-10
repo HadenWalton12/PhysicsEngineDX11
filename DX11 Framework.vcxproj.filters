@@ -194,6 +194,9 @@
     <ClInclude Include="ShapeConvex.h">
       <Filter>HeaderFiles\Physics\Shapes</Filter>
     </ClInclude>
+    <ClInclude Include="GJK.h">
+      <Filter>HeaderFiles\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -259,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="Shape.cpp">
       <Filter>SourceFiles\Physics\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="GJK.cpp">
+      <Filter>SourceFiles\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
