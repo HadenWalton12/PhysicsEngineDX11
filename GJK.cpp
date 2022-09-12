@@ -552,6 +552,335 @@ bool GJK_DoesIntersect(const Body* bodyA, const Body* bodyB)
 
 /*
 	Barycentric Coordinates
-
 	This borrows our signed volume code to perform the barycentric coordinates
 */
+Vec3 BarycentricCoordinates(Vec3 s1, Vec3 s2, Vec3 s3, const Vec3& point)
+{
+	s1 = s1 - point;
+	s2 = s2 - point;
+	s3 = s3 - point;
+
+	Vec3 normal = (s2 - s1).Cross(s3 - s1);
+	Vec3 point0 = normal * s1.Dot(normal) / normal.GetLengthSqr();
+
+	//Find The Axis With The Greatests Projected Area
+	int idx = 0;
+	float area_max = 0;
+
+	for (int i = 0; i < 3 ; i++)
+	{
+		int j = (i + 1) % 3;
+		int k = (i + 2) % 3;
+
+		Vec2 a = Vec2(s1[j], s1[k]);
+		Vec2 b = Vec2(s2[j], s2[k]);
+		Vec2 c = Vec2(s3[j], s3[k]);
+
+		Vec2 ab = b - a;
+		Vec2 ac = c - a;
+
+		float area = ab.x * ac.y - ab.y * ac.x;
+
+		if (area * area > area_max * area_max)
+		{
+			idx = i;
+			area_max = area;
+		}
+	}
+
+	//Project onto the appropriate axis
+	int x = (idx + 1) % 3;
+	int y = (idx + 2) % 3;
+
+	Vec2 s[3];
+
+	s[0] = Vec2(s1[x], s1[y]);
+	s[1] = Vec2(s2[x], s2[y]);
+	s[2] = Vec2(s3[x], s3[y]);
+	Vec2 p = Vec2(point0[x], point0[y]);
+
+	//Get the sub-areas of the triangle formed from the project origin and the edges
+	Vec3 areas;
+
+	for (int i = 0; i < 3; i++)
+	{
+		int j = (i + 1) % 3;
+		int k = (i + 1) % 3;
+	
+		Vec2 a = p;
+		Vec2 b = s[j];
+		Vec2 c = s[k];
+
+		Vec2 ab = b - a;
+		Vec2 ac = c - a;
+	
+		areas[i] = ab.x * ac.y - ab.y * ac.x;
+
+	}
+
+	Vec3 lambdas = areas / area_max;
+
+	if (!lambdas.IsValid())
+	{
+		lambdas = Vec3(1.0f, 0.0f, 0.0f);
+	}
+
+	return lambdas;
+}
+
+Vec3 NormalDirection(const tri_t tri, const std::vector<point_t> & points)
+{
+	const Vec3& a = points[tri.a].xyz;
+	const Vec3& b = points[tri.b].xyz;
+	const Vec3& c = points[tri.c].xyz;
+
+	Vec3 ab = b - a;
+	Vec3 ac = c - a;
+
+	Vec3 normal = ab.Cross(ac);
+	normal.Normalize();
+
+	return normal;
+}
+
+/*
+	Signed Distance To Triangle
+
+*/
+float SignedDistanceToTriangle(const tri_t & triangle , const Vec3 & point , const std::vector<point_t>& points)
+{
+	const Vec3 normal = NormalDirection(triangle, points);
+	const Vec3& a = points[triangle.a].xyz;
+	const Vec3 a2_point = point - a;
+	const float distance = normal.Dot(a2_point);
+
+	return distance;
+}
+
+
+/*
+	Closest Triangle
+*/
+int ClosestTriangle(const std::vector<tri_t>& triangles, const std::vector<point_t>& points)
+{
+	float min_distance_square = 1e10;
+
+	int idx = -1;
+
+	for (int i = 0; i < triangles.size(); i++)
+	{
+		const tri_t triangle = triangles[i];
+
+		float distance = SignedDistanceToTriangle(triangle, Vec3(0.0f), points);
+		float distance_square = distance * distance;
+		if (distance_square < min_distance_square )
+		{
+			idx = i;
+			min_distance_square = distance_square;
+		}
+	}
+	return idx;
+}
+
+/*
+	HasPoint
+*/
+
+bool HasPoint(const Vec3 & w , const std::vector<tri_t> triangles , const std::vector<point_t> & points)
+{
+	const float epsilons = 0.001f * 0.001f;
+	Vec3 delta;
+
+	for (int i = 0; i < triangles.size(); i++)
+	{
+		const tri_t& triangle = triangles[i];
+
+		delta = w - points[triangle.a].xyz;
+		if (delta.GetLengthSqr() < epsilons)
+		{
+			return true;
+		}
+
+		delta = w - points[triangle.b].xyz;
+		if (delta.GetLengthSqr() < epsilons)
+		{
+			return true;
+		}
+	
+		delta = w - points[triangle.c].xyz;
+		if (delta.GetLengthSqr() < epsilons)
+		{
+			return true;
+		}
+	
+	}
+	
+	return false;
+}
+
+/*
+	Remove TrianglesFacingPoint
+*/
+
+
+int RemoveTrianglesFacingPoint(const Vec3& point, std::vector<tri_t>& triangles, const std::vector<point_t>& points)
+{
+
+	int num_removed = 0;
+
+	for (int i = 0; i < triangles.size(); i++)
+	{
+		const tri_t& triangle = triangles[i];
+
+		float distance = SignedDistanceToTriangle(triangle, point, points);
+
+		if (distance > 0.0f)
+		{
+			//This triangle faces the point , remove it
+			triangles.erase(triangles.begin() + i);
+			i--;
+			num_removed++;
+		}
+	}
+
+	return num_removed;
+}
+
+/*
+	FindDanglingEdges
+*/
+void FindDanglingEdges(std::vector<edge_t>& dangling_edges , const std::vector<tri_t> & triangles)
+{
+	dangling_edges.clear();
+
+	for (int i = 0; i < triangles.size(); i++)
+	{
+		const tri_t& triangle = triangles[i];
+
+		edge_t edges[3];
+		edges[0].a = triangle.a;
+		edges[0].b = triangle.b;
+
+		edges[1].a = triangle.a;
+		edges[1].b = triangle.b;
+
+		edges[2].a = triangle.a;
+		edges[2].b = triangle.b;
+
+		int counts[3];
+
+		counts[0] = 0;
+		counts[1] = 0;
+		counts[2] = 0;
+
+		for (int j = 0; j < triangles.size(); j++)
+		{
+			if (j == i)
+			{
+				continue;
+			}
+
+			const tri_t & triangle_2 = triangles[j];
+
+			edge_t edges_2[3];
+			edges_2[0].a = triangle_2.a;
+			edges_2[0].b = triangle_2.b;
+
+			edges_2[1].a = triangle_2.a;
+			edges_2[1].b = triangle_2.b;
+
+			edges_2[2].a = triangle_2.a;
+			edges_2[2].b = triangle_2.b;
+
+			for (int k = 0; k < 3; k++)
+			{
+				if(edges[k] == edges_2[0])
+				{ 
+					counts[k]++;
+				}
+				if (edges[k] == edges_2[1])
+				{
+					counts[k]++;
+				}
+				if (edges[k] == edges_2[2])
+				{
+					counts[k]++;
+				}
+			}
+		}
+
+		//AN Edge That Isnt shared, it is dangling
+		for (int k = 0; k < 3; k++)
+		{
+			if (0 == counts[k])
+			{
+				dangling_edges.push_back(edges[k]);
+			}
+		}
+	}
+
+
+}
+
+/*
+	EPA_Expand
+*/
+float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , const point_t simplex_points[4] , Vec3 & point_on_a , Vec3 & point_on_b)
+{
+	std::vector<point_t> points;
+	std::vector<tri_t> triangles;
+	std::vector<edge_t> dangling_edges;
+
+	Vec3 centre(0.0f);
+
+	for (int i = 0; i < 4; i++)
+	{
+		points.push_back(simplex_points[i]);
+		centre += simplex_points[i].xyz;
+	}
+	
+	centre *= 0.25f;
+
+	//Build The Triangles
+	for (int i = 0; i < 4; i++)
+	{
+		int j = (i + 1) % 4;
+		int k = (i + 2) % 4;
+
+		tri_t triangle;
+		
+		triangle.a = i;
+		triangle.b = i;
+		triangle.c = i;
+
+		int unused_point = (i + 3) % 4;
+
+		float distance = SignedDistanceToTriangle(triangle, points[unused_point].xyz, points);
+
+		//The unused points is always on the negative/inside of the triangle
+		//make sure the normal points away
+		if (distance > 0.0f)
+		{
+			std::swap(triangle.a, triangle.b);
+		}
+
+		triangles.push_back(triangle);
+ 	}
+
+	//
+	//Expand the simplex to find the closest face of the CSO to the origin
+	//
+	while (1)
+	{
+		const int idx = ClosestTriangle(triangles, points);
+		Vec3 normal = NormalDirection(triangles[idx], points);
+
+		const point_t new_point = Support(body_a, body_b, normal, bias);
+		
+		//If w already exists, we just stop, we dont have to any further
+		if ()
+		{
+
+		}
+	};
+}
