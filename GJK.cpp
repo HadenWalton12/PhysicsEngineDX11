@@ -546,6 +546,13 @@ bool GJK_DoesIntersect(const Body* bodyA, const Body* bodyB)
 	return does_contain_origin;
 }
 
+bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias, Vec3& point_on_a, Vec3& point_on_b)
+{
+	const Vec3 origin(0.0f);
+
+	return false;
+}
+
 
 
 
@@ -878,9 +885,85 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 		const point_t new_point = Support(body_a, body_b, normal, bias);
 		
 		//If w already exists, we just stop, we dont have to any further
-		if ()
+		if (HasPoint(new_point.xyz , triangles , points))
 		{
+			break;
+		}
 
+		float distance = SignedDistanceToTriangle(triangles[idx] , new_point.xyz , points);
+		if (distance <= 0.0f)
+		{
+			break; //Cannot expand
+		}
+
+		const int new_idx = (int)points.size();
+		points.push_back(new_point);
+
+		//Remove triangles that face this point
+		int num_removed = RemoveTrianglesFacingPoint(new_point.xyz, triangles, points);
+		if (0 == num_removed)
+		{
+			break;
+		}
+
+
+		//Find the dangling edges
+		dangling_edges.clear();
+		FindDanglingEdges(dangling_edges, triangles);
+
+		if (0 == dangling_edges.size())
+		{
+			break;
+		}
+
+		//In theory the edges should be a proper counter clock wise order , so we only need to add the new point as a 
+		//in order to create new triangle that face away from origin
+		for (int i = 0; i < dangling_edges.size(); i++)
+		{
+			const edge_t& edge = dangling_edges[i];
+
+			tri_t triangle;
+
+			triangle.a = new_idx;
+			triangle.b = edge.b;
+			triangle.c = edge.a;
+		
+			//Make sure its oriented properly
+			float distance = SignedDistanceToTriangle(triangle, centre, points);
+			if (distance > 0.0f)
+			{
+				std::swap(triangle.b, triangle.c);
+
+			}
+			triangles.push_back(triangle);
 		}
 	};
+
+	const int idx = ClosestTriangle(triangles, points);
+	const tri_t& tri = triangles[idx];
+
+	Vec3 point_a_w = points[tri.a].xyz;
+	Vec3 point_b_w = points[tri.b].xyz;
+	Vec3 point_c_w = points[tri.c].xyz;
+	Vec3 lambdas = BarycentricCoordinates(point_a_w , point_b_w , point_c_w , Vec3(0.0f , 0.0f ,0.0f));
+
+	//Get The point On shape a
+	Vec3 point_a_a = points[tri.a].point_a;
+	Vec3 point_b_a = points[tri.b].point_a;
+	Vec3 point_c_a = points[tri.c].point_a;
+	
+	point_on_a = point_a_a * lambdas[0] + point_b_a * lambdas[1] + point_c_a * lambdas[2];
+
+
+	//Get The point On shape b
+	Vec3 point_a_b = points[tri.a].point_b;
+	Vec3 point_b_b = points[tri.b].point_b;
+	Vec3 point_c_b = points[tri.c].point_b;
+
+	point_on_b = point_a_b * lambdas[0] + point_b_b * lambdas[1] + point_c_b * lambdas[2];
+
+	//Return the penetration distance
+	Vec3 delta = point_on_b = point_on_a;
+	return delta.GetMagnitude();
 }
+
