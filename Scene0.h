@@ -93,9 +93,23 @@ public:
 		body._InvMass = 0.0f;
 		body._Elasicity = 1.0f;
 		body._Friction = 0.0f;
+
+
+
 		//Can still use these ground points to define the paremeters of the box that can apply the physics , however we generate the 
 		//shape using obj
 		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f),XMFLOAT3(1.0f, 1.0f , 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		_SceneBodies.push_back(body);
+
+		body._Position = Vec3(0.0f, 10.0f, 0.0f);
+		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 1.0f;
+		body._Friction = 0.0f;
+
 
 		_SceneBodies.push_back(body);
 	}

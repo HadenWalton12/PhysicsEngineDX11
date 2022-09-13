@@ -546,129 +546,6 @@ bool GJK_DoesIntersect(const Body* bodyA, const Body* bodyB)
 	return does_contain_origin;
 }
 
-bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias, Vec3& point_on_a, Vec3& point_on_b)
-{
-	const Vec3 origin(0.0f);
-
-	int num_points = 1;
-	point_t simplex_points[4];
-
-	simplex_points[0] = Support(body_a, body_b, Vec3(1.0f, 1.0f, 1.0f), 0.0f);
-	float closest_distance = 1e10f;
-	bool does_contain_origin = false;
-
-	Vec3 new_direction = simplex_points[0].xyz * -1.0f;
-
-	do
-	{
-		//Get The new point to check on
-		
-		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
-
-		//If the new point is the same as a previous point , then we cant expand any further
-		if (HasPoint(simplex_points , new_point))
-		{
-			break;
-		}
-
-		simplex_points[num_points] = new_point;
-		num_points++;
-
-		//If this new point hasnt moved passed the origin , therefor the origin cannot
-		//be in the set, therefor no collision has occured
-		float dotdot = new_direction.Dot(new_point.xyz - origin);
-		if (dotdot < 0.0f)
-		{
-			break;
-		}
-
-		Vec4 lambdas;
-
-		does_contain_origin = SimplexSignedVolumes(simplex_points, num_points, new_direction, lambdas);
-		if (does_contain_origin)
-		{
-			break;
-		}
-
-		//Check that the new project of the origin onto the simplex is closer than the previous 
-
-		float distance = new_direction.GetLengthSqr();
-		if (distance >= closest_distance)
-		{
-			break;
-		}
-		closest_distance = distance;
-
-		//Use the lambdas that support the new search direction , and invalidate any point that do not support it
-		SortValids(simplex_points, lambdas);
-		num_points = NumValids(lambdas);
-
-		does_contain_origin = (4 == num_points);
-
-	} while (!does_contain_origin);
-	if (!does_contain_origin)
-	{
-		return false;
-	}
-
-	//Checking that we have a  3-Simplex (EPA Expects a tetrahedron)
-	if (1 == num_points)
-	{
-		Vec3 search_direction = simplex_points[0].xyz * -1.0f;
-		point_t new_point = Support(body_a, body_b, search_direction, 0.0f);
-		simplex_points[num_points] = new_point;
-		num_points++;
-	}
-	if (2 == num_points)
-	{
-		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
-		Vec3 u, v;
-		ab.GetOrtho(u, v);
-
-		Vec3 new_direction = u;
-	
-		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
-		simplex_points[num_points] = new_point;
-		num_points++;
-	}
-	if (3 == num_points)
-	{
-		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
-		Vec3 ac = simplex_points[2].xyz - simplex_points[0].xyz;
-		Vec3 normal = ab.Cross(ac);
-
-		Vec3 new_direction = normal;
-		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
-		num_points++;
-	}
-
-	//Expand the simplex by the bias amount
-	
-	//Get the centre point of the simplex
-	Vec3 average = Vec3(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i < num_points; i++)
-	{
-		average += simplex_points[i].xyz;
-	}
-	average *= 0.25f;
-
-	//Now expand the simplex by the bias amount
-	for (int i = 0; i < num_points; i++)
-	{
-		point_t& point = simplex_points[i];
-
-		Vec3 direction = point.xyz - average; //Gives ray from" centre" to witness point
-		direction.Normalize();
-		point.point_a += direction * bias;
-		point.point_b -= direction * bias;
-		point.xyz = point.point_a - point.point_b;
-	}
-	
-	//Now Perform EPA expansion of the simplex to find the closest face on the CSO
-	EPA_Expand(body_a, body_b, bias, simplex_points, point_on_a, point_on_b);
-	return true;
-
-}
 
 void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a, Vec3& point_on_b)
 {
@@ -999,11 +876,10 @@ void FindDanglingEdges(std::vector<edge_t>& dangling_edges , const std::vector<t
 
 
 }
-
 /*
 	EPA_Expand
 */
-float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , const point_t simplex_points[4] , Vec3 & point_on_a , Vec3 & point_on_b)
+float EPA_Expand(const Body* body_a, const Body* body_b, const float bias, const point_t simplex_points[4], Vec3& point_on_a, Vec3& point_on_b)
 {
 	std::vector<point_t> points;
 	std::vector<tri_t> triangles;
@@ -1016,7 +892,7 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 		points.push_back(simplex_points[i]);
 		centre += simplex_points[i].xyz;
 	}
-	
+
 	centre *= 0.25f;
 
 	//Build The Triangles
@@ -1026,7 +902,7 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 		int k = (i + 2) % 4;
 
 		tri_t triangle;
-		
+
 		triangle.a = i;
 		triangle.b = i;
 		triangle.c = i;
@@ -1043,7 +919,7 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 		}
 
 		triangles.push_back(triangle);
- 	}
+	}
 
 	//
 	//Expand the simplex to find the closest face of the CSO to the origin
@@ -1054,14 +930,14 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 		Vec3 normal = NormalDirection(triangles[idx], points);
 
 		const point_t new_point = Support(body_a, body_b, normal, bias);
-		
+
 		//If w already exists, we just stop, we dont have to any further
-		if (HasPoint(new_point.xyz , triangles , points))
+		if (HasPoint(new_point.xyz, triangles, points))
 		{
 			break;
 		}
 
-		float distance = SignedDistanceToTriangle(triangles[idx] , new_point.xyz , points);
+		float distance = SignedDistanceToTriangle(triangles[idx], new_point.xyz, points);
 		if (distance <= 0.0f)
 		{
 			break; //Cannot expand
@@ -1098,7 +974,7 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 			triangle.a = new_idx;
 			triangle.b = edge.b;
 			triangle.c = edge.a;
-		
+
 			//Make sure its oriented properly
 			float distance = SignedDistanceToTriangle(triangle, centre, points);
 			if (distance > 0.0f)
@@ -1116,13 +992,13 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 	Vec3 point_a_w = points[tri.a].xyz;
 	Vec3 point_b_w = points[tri.b].xyz;
 	Vec3 point_c_w = points[tri.c].xyz;
-	Vec3 lambdas = BarycentricCoordinates(point_a_w , point_b_w , point_c_w , Vec3(0.0f , 0.0f ,0.0f));
+	Vec3 lambdas = BarycentricCoordinates(point_a_w, point_b_w, point_c_w, Vec3(0.0f, 0.0f, 0.0f));
 
 	//Get The point On shape a
 	Vec3 point_a_a = points[tri.a].point_a;
 	Vec3 point_b_a = points[tri.b].point_a;
 	Vec3 point_c_a = points[tri.c].point_a;
-	
+
 	point_on_a = point_a_a * lambdas[0] + point_b_a * lambdas[1] + point_c_a * lambdas[2];
 
 
@@ -1138,3 +1014,124 @@ float EPA_Expand(const Body* body_a , const Body* body_b , const float bias , co
 	return delta.GetMagnitude();
 }
 
+bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias, Vec3& point_on_a, Vec3& point_on_b)
+{
+	const Vec3 origin(0.0f);
+
+	int num_points = 1;
+	point_t simplex_points[4];
+
+	simplex_points[0] = Support(body_a, body_b, Vec3(1.0f, 1.0f, 1.0f), 0.0f);
+	float closest_distance = 1e10f;
+	bool does_contain_origin = false;
+
+	Vec3 new_direction = simplex_points[0].xyz * -1.0f;
+
+	do
+	{
+		//Get The new point to check on
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		//If the new point is the same as a previous point , then we cant expand any further
+		if (HasPoint(simplex_points, new_point))
+		{
+			break;
+		}
+
+		simplex_points[num_points] = new_point;
+		num_points++;
+
+		//If this new point hasnt moved passed the origin , therefor the origin cannot
+		//be in the set, therefor no collision has occured
+		float dotdot = new_direction.Dot(new_point.xyz - origin);
+		if (dotdot < 0.0f)
+		{
+			break;
+		}
+
+		Vec4 lambdas;
+		does_contain_origin = SimplexSignedVolumes(simplex_points, num_points, new_direction, lambdas);
+
+		if (does_contain_origin)
+		{
+			break;
+		}
+
+		//Check that the new project of the origin onto the simplex is closer than the previous 
+		float distance = new_direction.GetLengthSqr();
+		if (distance >= closest_distance)
+		{
+			break;
+		}
+
+		closest_distance = distance;
+
+		//Use the lambdas that support the new search direction , and invalidate any point that do not support it
+		SortValids(simplex_points, lambdas);
+		num_points = NumValids(lambdas);
+
+		does_contain_origin = (4 == num_points);
+
+	} while (!does_contain_origin);
+	if (!does_contain_origin)
+	{
+		return false;
+	}
+
+	//Checking that we have a  3-Simplex (EPA Expects a tetrahedron)
+	if (1 == num_points)
+	{
+		Vec3 search_direction = simplex_points[0].xyz * -1.0f;
+		point_t new_point = Support(body_a, body_b, search_direction, 0.0f);
+		simplex_points[num_points] = new_point;
+		num_points++;
+	}
+	if (2 == num_points)
+	{
+		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
+		Vec3 u, v;
+		ab.GetOrtho(u, v);
+
+		Vec3 new_direction = u;
+
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		simplex_points[num_points] = new_point;
+		num_points++;
+	}
+	if (3 == num_points)
+	{
+		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
+		Vec3 ac = simplex_points[2].xyz - simplex_points[0].xyz;
+		Vec3 normal = ab.Cross(ac);
+
+		Vec3 new_direction = normal;
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		num_points++;
+	}
+
+	//Expand the simplex by the bias amount
+
+	//Get the centre point of the simplex
+	Vec3 average = Vec3(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < num_points; i++)
+	{
+		average += simplex_points[i].xyz;
+	}
+	average *= 0.25f;
+
+	//Now expand the simplex by the bias amount
+	for (int i = 0; i < num_points; i++)
+	{
+		point_t& point = simplex_points[i];
+
+		Vec3 direction = point.xyz - average; //Gives ray from" centre" to witness point
+		direction.Normalize();
+		point.point_a += direction * bias;
+		point.point_b -= direction * bias;
+		point.xyz = point.point_a - point.point_b;
+	}
+
+	//Now Perform EPA expansion of the simplex to find the closest face on the CSO
+	EPA_Expand(body_a, body_b, bias, simplex_points, point_on_a, point_on_b);
+	return true;
+
+}
