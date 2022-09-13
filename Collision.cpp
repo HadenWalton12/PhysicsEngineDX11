@@ -134,7 +134,7 @@ bool Collision::Intersect(Body* A, Body* B, float dt, Contact& contact)
 		Vec3 vel_a = A->_LinearVelocity;
 		Vec3 vel_b = B->_LinearVelocity;
 
-		if (SphereSphereDynamic(a_sphere, b_sphere, pos_a, pos_b, vel_a, vel_b, dt, contact.ptOnA_WorldSpace, contact.ptOnB_WorldSpace , contact._TimeOfImpact))
+		if (SphereSphereStatic(a_sphere, b_sphere, pos_a, pos_b, vel_a, vel_b, dt, contact.ptOnA_WorldSpace, contact.ptOnB_WorldSpace ))
 		{
 
 			A->Update(contact._TimeOfImpact);

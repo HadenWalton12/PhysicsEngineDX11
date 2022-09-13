@@ -106,7 +106,7 @@ public:
 		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
 		body._LinearVelocity.Zero();
 		body._AngularVelocity.Zero();
-		body._InvMass = 0.0f;
+		body._InvMass = 1.0f;
 		body._Elasicity = 1.0f;
 		body._Friction = 0.0f;
 
