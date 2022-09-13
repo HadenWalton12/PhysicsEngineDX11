@@ -5,7 +5,7 @@
 
 bool GJK_DoesIntersect(const Body* body_a, const Body* body_b);
 bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias , Vec3 & point_on_a , Vec3 & point_on_b);
-bool GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a, Vec3& point_on_b);
+void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a, Vec3& point_on_b);
 
 struct point_t
 {

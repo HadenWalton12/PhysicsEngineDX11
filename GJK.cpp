@@ -550,7 +550,178 @@ bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias,
 {
 	const Vec3 origin(0.0f);
 
-	return false;
+	int num_points = 1;
+	point_t simplex_points[4];
+
+	simplex_points[0] = Support(body_a, body_b, Vec3(1.0f, 1.0f, 1.0f), 0.0f);
+	float closest_distance = 1e10f;
+	bool does_contain_origin = false;
+
+	Vec3 new_direction = simplex_points[0].xyz * -1.0f;
+
+	do
+	{
+		//Get The new point to check on
+		
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+
+		//If the new point is the same as a previous point , then we cant expand any further
+		if (HasPoint(simplex_points , new_point))
+		{
+			break;
+		}
+
+		simplex_points[num_points] = new_point;
+		num_points++;
+
+		//If this new point hasnt moved passed the origin , therefor the origin cannot
+		//be in the set, therefor no collision has occured
+		float dotdot = new_direction.Dot(new_point.xyz - origin);
+		if (dotdot < 0.0f)
+		{
+			break;
+		}
+
+		Vec4 lambdas;
+
+		does_contain_origin = SimplexSignedVolumes(simplex_points, num_points, new_direction, lambdas);
+		if (does_contain_origin)
+		{
+			break;
+		}
+
+		//Check that the new project of the origin onto the simplex is closer than the previous 
+
+		float distance = new_direction.GetLengthSqr();
+		if (distance >= closest_distance)
+		{
+			break;
+		}
+		closest_distance = distance;
+
+		//Use the lambdas that support the new search direction , and invalidate any point that do not support it
+		SortValids(simplex_points, lambdas);
+		num_points = NumValids(lambdas);
+
+		does_contain_origin = (4 == num_points);
+
+	} while (!does_contain_origin);
+	if (!does_contain_origin)
+	{
+		return false;
+	}
+
+	//Checking that we have a  3-Simplex (EPA Expects a tetrahedron)
+	if (1 == num_points)
+	{
+		Vec3 search_direction = simplex_points[0].xyz * -1.0f;
+		point_t new_point = Support(body_a, body_b, search_direction, 0.0f);
+		simplex_points[num_points] = new_point;
+		num_points++;
+	}
+	if (2 == num_points)
+	{
+		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
+		Vec3 u, v;
+		ab.GetOrtho(u, v);
+
+		Vec3 new_direction = u;
+	
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		simplex_points[num_points] = new_point;
+		num_points++;
+	}
+	if (3 == num_points)
+	{
+		Vec3 ab = simplex_points[1].xyz - simplex_points[0].xyz;
+		Vec3 ac = simplex_points[2].xyz - simplex_points[0].xyz;
+		Vec3 normal = ab.Cross(ac);
+
+		Vec3 new_direction = normal;
+		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		num_points++;
+	}
+
+	//Expand the simplex by the bias amount
+	
+	//Get the centre point of the simplex
+	Vec3 average = Vec3(0.0f, 0.0f, 0.0f);
+	for (int i = 0; i < num_points; i++)
+	{
+		average += simplex_points[i].xyz;
+	}
+	average *= 0.25f;
+
+	//Now expand the simplex by the bias amount
+	for (int i = 0; i < num_points; i++)
+	{
+		point_t& point = simplex_points[i];
+
+		Vec3 direction = point.xyz - average; //Gives ray from" centre" to witness point
+		direction.Normalize();
+		point.point_a += direction * bias;
+		point.point_b -= direction * bias;
+		point.xyz = point.point_a - point.point_b;
+	}
+	
+	//Now Perform EPA expansion of the simplex to find the closest face on the CSO
+	EPA_Expand(body_a, body_b, bias, simplex_points, point_on_a, point_on_b);
+	return true;
+
+}
+
+void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a, Vec3& point_on_b)
+{
+	float closest_distance = 1e10f;
+	const float bias = 0.0f;
+
+	int num_point = 1;
+	point_t simplex_points[4];
+
+	simplex_points[0] = Support(body_a, body_b, Vec3(1.0f, 1.0f, 1.0f), bias);
+	Vec4 lambdas = Vec4(1.0f, 0.0f, 0.0f, 0.0f);
+	Vec3 new_direction = simplex_points[0].xyz * -1.0f;
+	do
+	{
+		//Get the new point to check on
+		point_t new_point = Support(body_a, body_b, new_direction, bias);
+
+		//If the new point is the same as a previous point , then we can expand any further 
+		if (HasPoint(simplex_points, new_point))
+		{
+			break;
+		}
+
+		//Add point and get new search direction
+		simplex_points[num_point] = new_point;
+		num_point++;
+
+		SimplexSignedVolumes(simplex_points, num_point, new_direction, lambdas);
+		SortValids(simplex_points, lambdas);
+
+		num_point = NumValids(lambdas);
+
+		//Check that the new projection of the origin onto the simplex is closer than the previous
+		float distance = new_direction.GetLengthSqr();
+
+		if (distance >= closest_distance)
+		{
+			break;
+		}
+
+		closest_distance = distance;
+	} while (num_point < 4);
+
+	point_on_a.Zero();
+	point_on_b.Zero();
+
+	for (int i = 0; i < 4; i++)
+	{
+		point_on_a += simplex_points[i].point_a * lambdas[i];
+		point_on_b += simplex_points[i].point_b * lambdas[i];
+	}
+
+
 }
 
 
