@@ -90,7 +90,7 @@ bool Collision::SphereSphereDynamic(ShapeSphere* sphere_a, ShapeSphere* sphere_b
 
 	return true;
 }
-bool Collision::SphereSphereStatic(ShapeSphere* sphere_a, ShapeSphere* sphere_b, Vec3& pos_a, Vec3& pos_b, Vec3& vel_a, Vec3& vel_b, float dt, Vec3& pt_On_A, Vec3& pt_On_B)
+bool Collision::SphereSphereStatic(ShapeSphere* sphere_a, ShapeSphere* sphere_b, Vec3& pos_a, Vec3& pos_b, Vec3& pt_On_A, Vec3& pt_On_B)
 {
 	const Vec3 ab = pos_b - pos_a;
 	Vec3 normal = ab;
@@ -121,6 +121,7 @@ bool Collision::Intersect(Body* A, Body* B, float dt, Contact& contact)
 
 	contact._BodyA = A;
 	contact._BodyB = B;
+
 	contact._TimeOfImpact = 0.0f;
 
 	if (A->_Shape->GetType() == Shape::SHAPE_SPHERE && B->_Shape->GetType() == Shape::SHAPE_SPHERE)
@@ -131,24 +132,18 @@ bool Collision::Intersect(Body* A, Body* B, float dt, Contact& contact)
 		Vec3 pos_a = A->_Position;
 		Vec3 pos_b = B->_Position;
 
-		Vec3 vel_a = A->_LinearVelocity;
-		Vec3 vel_b = B->_LinearVelocity;
 
-		if (SphereSphereStatic(a_sphere, b_sphere, pos_a, pos_b, vel_a, vel_b, dt, contact.ptOnA_WorldSpace, contact.ptOnB_WorldSpace ))
+		if (SphereSphereStatic(a_sphere, b_sphere, pos_a, pos_b, contact.ptOnA_WorldSpace, contact.ptOnB_WorldSpace ))
 		{
-
-			A->Update(contact._TimeOfImpact);
-			B->Update(contact._TimeOfImpact);
-
-			contact.ptOnA_LocalSpace = A->WorldSpaceToBodySpace(contact.ptOnA_WorldSpace);
-			contact.ptOnB_LocalSpace = B->WorldSpaceToBodySpace(contact.ptOnB_WorldSpace);
 
 			contact.Normal = A->_Position - B->_Position;
 			contact.Normal.Normalize();
 
-			//Unqind Time Step
-			A->Update(-contact._TimeOfImpact);
-			B->Update(-contact._TimeOfImpact);
+			contact.ptOnA_LocalSpace = A->WorldSpaceToBodySpace(contact.ptOnA_WorldSpace);
+			contact.ptOnB_LocalSpace = B->WorldSpaceToBodySpace(contact.ptOnB_WorldSpace);
+
+
+
 
 
 			Vec3 ab = B->_Position - A->_Position;

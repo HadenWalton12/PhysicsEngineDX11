@@ -120,7 +120,7 @@ Vec3 SignedVolume2D(const Vec3& s1, const Vec3& s2, const Vec3& s3)
 		float area = ab.x * ac.y - ab.y * ac.x;
 		if (area * area > max_area * max_area)
 		{
-			id = 0;
+			id = 1;
 			max_area = area;
 		}
 	}
@@ -172,22 +172,21 @@ Vec3 SignedVolume2D(const Vec3& s1, const Vec3& s2, const Vec3& s3)
 	for (int i = 0; i < 3; i++)
 	{
 		int k = (i + 1) % 3;
-		int I = (i + 2) % 3;
-
+		int l = (i + 2) % 3;
+		
 		Vec3 edges_points[3];
 		edges_points[0] = s1;
 		edges_points[1] = s2;
 		edges_points[2] = s3;
 
-		Vec2 lambda_edge = SignedVolume1D(edges_points[k], edges_points[I]);
-		Vec3 point = edges_points[k] * lambda_edge[0] + edges_points[I] * lambda_edge[1];
-
+		Vec2 lambda_edge = SignedVolume1D(edges_points[k], edges_points[1]);
+		Vec3 point = edges_points[k] * lambda_edge[0] + edges_points[l] * lambda_edge[1];
 		if (point.GetLengthSqr() < distance)
 		{
 			distance = point.GetLengthSqr();
 			lambdas[i] = 0;
 			lambdas[k] = lambda_edge[0];
-			lambdas[I] = lambda_edge[1];
+			lambdas[l] = lambda_edge[1];
 		}
 	}
 	return lambdas;
@@ -243,6 +242,7 @@ Vec4 SignedVolume3D(const Vec3& s1, const Vec3& s2, const Vec3& s3, const Vec3& 
 		if (point.GetLengthSqr() < distance)
 		{
 			distance = point.GetLengthSqr();
+			lambdas.Zero();
 			lambdas[i] = lambdas_face[0];
 			lambdas[j] = lambdas_face[1];
 			lambdas[k] = lambdas_face[2];
@@ -254,52 +254,82 @@ Vec4 SignedVolume3D(const Vec3& s1, const Vec3& s2, const Vec3& s3, const Vec3& 
 
 //Test Utility functions will be used to make sure the functions work as expected, projecting a point onto a simplex and return
 //barycentric coordinates of this stated projection.
-void TestSignedVolumeProjection()
-{
-	const Vec3 original_points[4] =
-	{
-		Vec3(0.0f , 0.0f , 0.0f) ,
-		Vec3(1.0f , 0.0f , 0.0f) ,
-		Vec3(0.0f , 1.0f , 0.0f) ,
-		Vec3(0.0f , 0.0f , 1.0f) ,
+void TestSignedVolumeProjection() {
+	const Vec3 orgPts[4] = {
+		Vec3(0, 0, 0),
+		Vec3(1, 0, 0),
+		Vec3(0, 1, 0),
+		Vec3(0, 0, 1),
 	};
-	Vec3 points[4];
+	Vec3 pts[4];
 	Vec4 lambdas;
 	Vec3 v;
 
-	for (int i = 0; i < 4; i++)
-	{
-		points[i] = original_points[i] + Vec3(1.0f, 1.0f, 1.0f);
+	for (int i = 0; i < 4; i++) {
+		pts[i] = orgPts[i] + Vec3(1, 1, 1);
 	}
-
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
+	lambdas = SignedVolume3D(pts[0], pts[1], pts[2], pts[3]);
 	v.Zero();
-
-	for (int i = 0; i < 4; i++)
-	{
-		v += points[i] * lambdas[i];
+	for (int i = 0; i < 4; i++) {
+		v += pts[i] * lambdas[i];
 	}
+	printf("lambdas: %.3f %.3f %.3f %.3f        v: %.3f %.3f %.3f\n",
+		lambdas.x, lambdas.y, lambdas.z, lambdas.w,
+		v.x, v.y, v.z
+	);
 
-	//print function here
-
-
-	for (int i = 0; i < 4; i++)
-	{
-		points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f) * 0.25f;
-
+	for (int i = 0; i < 4; i++) {
+		pts[i] = orgPts[i] + Vec3(-1, -1, -1) * 0.25f;
 	}
-	lambdas = SignedVolume3D(points[0], points[1], points[2], points[3]);
+	lambdas = SignedVolume3D(pts[0], pts[1], pts[2], pts[3]);
 	v.Zero();
-	for (int i = 0; i < 4; i++)
-	{
-		v += points[i] * lambdas[i];
+	for (int i = 0; i < 4; i++) {
+		v += pts[i] * lambdas[i];
 	}
+	printf("lambdas: %.3f %.3f %.3f %.3f        v: %.3f %.3f %.3f\n",
+		lambdas.x, lambdas.y, lambdas.z, lambdas.w,
+		v.x, v.y, v.z
+	);
 
-	for (int i = 0; i < 4; i++)
-	{
-		points[i] = original_points[i] + Vec3(-1.0f, -1.0f, -1.0f);
-
+	for (int i = 0; i < 4; i++) {
+		pts[i] = orgPts[i] + Vec3(-1, -1, -1);
 	}
+	lambdas = SignedVolume3D(pts[0], pts[1], pts[2], pts[3]);
+	v.Zero();
+	for (int i = 0; i < 4; i++) {
+		v += pts[i] * lambdas[i];
+	}
+	printf("lambdas: %.3f %.3f %.3f %.3f        v: %.3f %.3f %.3f\n",
+		lambdas.x, lambdas.y, lambdas.z, lambdas.w,
+		v.x, v.y, v.z
+	);
+
+	for (int i = 0; i < 4; i++) {
+		pts[i] = orgPts[i] + Vec3(1, 1, -0.5f);
+	}
+	lambdas = SignedVolume3D(pts[0], pts[1], pts[2], pts[3]);
+	v.Zero();
+	for (int i = 0; i < 4; i++) {
+		v += pts[i] * lambdas[i];
+	}
+	printf("lambdas: %.3f %.3f %.3f %.3f        v: %.3f %.3f %.3f\n",
+		lambdas.x, lambdas.y, lambdas.z, lambdas.w,
+		v.x, v.y, v.z
+	);
+
+	pts[0] = Vec3(51.1996613f, 26.1989613f, 1.91339576f);
+	pts[1] = Vec3(-51.0567360f, -26.0565681f, -0.436143428f);
+	pts[2] = Vec3(50.8978920f, -24.1035538f, -1.04042661f);
+	pts[3] = Vec3(-49.1021080f, 25.8964462f, -1.04042661f);
+	lambdas = SignedVolume3D(pts[0], pts[1], pts[2], pts[3]);
+	v.Zero();
+	for (int i = 0; i < 4; i++) {
+		v += pts[i] * lambdas[i];
+	}
+	printf("lambdas: %.3f %.3f %.3f %.3f        v: %.3f %.3f %.3f\n",
+		lambdas.x, lambdas.y, lambdas.z, lambdas.w,
+		v.x, v.y, v.z
+	);
 }
 
 
@@ -318,6 +348,7 @@ bool SimplexSignedVolumes(point_t* points, const int num, Vec3& new_direction, V
 
 	switch (num)
 	{
+	default:
 	case 2:
 	{
 		Vec2 lambdas = SignedVolume1D(points[0].xyz, points[1].xyz);
@@ -466,7 +497,6 @@ void SortValids(point_t simplex_points[4], Vec4& lambdas)
 /*
 	NumValids
 */
-
 static int NumValids(const Vec4& lambdas)
 {
 	int num = 0;
@@ -502,7 +532,7 @@ bool GJK_DoesIntersect(const Body* bodyA, const Body* bodyB)
 	do
 	{
 	  //Get The new point check on
-		point_t new_point = Support(bodyA , bodyB , Vec3(1.0f , 1.0f , 1.0f) , 0.0f);
+		point_t new_point = Support(bodyA , bodyB , new_direction, 0.0f);
 
 		//If the new point is the same as a previous point , then we cant expand any further
 		if (HasPoint(simplex_points , new_point))
@@ -546,9 +576,9 @@ bool GJK_DoesIntersect(const Body* bodyA, const Body* bodyB)
 	return does_contain_origin;
 }
 
-
 void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a, Vec3& point_on_b)
 {
+	Vec3 origin = (0.0f);
 	float closest_distance = 1e10f;
 	const float bias = 0.0f;
 
@@ -600,10 +630,6 @@ void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a,
 
 
 }
-
-
-
-
 
 /*
 	Barycentric Coordinates
@@ -668,6 +694,7 @@ Vec3 BarycentricCoordinates(Vec3 s1, Vec3 s2, Vec3 s3, const Vec3& point)
 
 		Vec2 ab = b - a;
 		Vec2 ac = c - a;
+
 	
 		areas[i] = ab.x * ac.y - ab.y * ac.x;
 
@@ -816,11 +843,11 @@ void FindDanglingEdges(std::vector<edge_t>& dangling_edges , const std::vector<t
 		edges[0].a = triangle.a;
 		edges[0].b = triangle.b;
 
-		edges[1].a = triangle.a;
-		edges[1].b = triangle.b;
+		edges[1].a = triangle.b;
+		edges[1].b = triangle.c;
 
-		edges[2].a = triangle.a;
-		edges[2].b = triangle.b;
+		edges[2].a = triangle.c;
+		edges[2].b = triangle.a;
 
 		int counts[3];
 
@@ -841,11 +868,11 @@ void FindDanglingEdges(std::vector<edge_t>& dangling_edges , const std::vector<t
 			edges_2[0].a = triangle_2.a;
 			edges_2[0].b = triangle_2.b;
 
-			edges_2[1].a = triangle_2.a;
-			edges_2[1].b = triangle_2.b;
+			edges_2[1].a = triangle_2.b;
+			edges_2[1].b = triangle_2.c;
 
-			edges_2[2].a = triangle_2.a;
-			edges_2[2].b = triangle_2.b;
+			edges_2[2].a = triangle_2.c;
+			edges_2[2].b = triangle_2.a;
 
 			for (int k = 0; k < 3; k++)
 			{
@@ -984,7 +1011,7 @@ float EPA_Expand(const Body* body_a, const Body* body_b, const float bias, const
 			}
 			triangles.push_back(triangle);
 		}
-	};
+	}
 
 	const int idx = ClosestTriangle(triangles, points);
 	const tri_t& tri = triangles[idx];
@@ -992,7 +1019,7 @@ float EPA_Expand(const Body* body_a, const Body* body_b, const float bias, const
 	Vec3 point_a_w = points[tri.a].xyz;
 	Vec3 point_b_w = points[tri.b].xyz;
 	Vec3 point_c_w = points[tri.c].xyz;
-	Vec3 lambdas = BarycentricCoordinates(point_a_w, point_b_w, point_c_w, Vec3(0.0f, 0.0f, 0.0f));
+	Vec3 lambdas = BarycentricCoordinates(point_a_w, point_b_w, point_c_w, Vec3(0.0f));
 
 	//Get The point On shape a
 	Vec3 point_a_a = points[tri.a].point_a;
@@ -1010,7 +1037,7 @@ float EPA_Expand(const Body* body_a, const Body* body_b, const float bias, const
 	point_on_b = point_a_b * lambdas[0] + point_b_b * lambdas[1] + point_c_b * lambdas[2];
 
 	//Return the penetration distance
-	Vec3 delta = point_on_b = point_on_a;
+	Vec3 delta = point_on_b - point_on_a;
 	return delta.GetMagnitude();
 }
 
@@ -1105,6 +1132,7 @@ bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias,
 
 		Vec3 new_direction = normal;
 		point_t new_point = Support(body_a, body_b, new_direction, 0.0f);
+		simplex_points[num_points] = new_point;
 		num_points++;
 	}
 
@@ -1112,7 +1140,7 @@ bool GJK_DoesIntersect(const Body* body_a, const Body* body_b, const float bias,
 
 	//Get the centre point of the simplex
 	Vec3 average = Vec3(0.0f, 0.0f, 0.0f);
-	for (int i = 0; i < num_points; i++)
+	for (int i = 0; i < 4; i++)
 	{
 		average += simplex_points[i].xyz;
 	}

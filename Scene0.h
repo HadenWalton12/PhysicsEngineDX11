@@ -88,17 +88,17 @@ public:
 		Body body;
 		body._Position = Vec3(0.0f, 0.0f, 0.0f);
 		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		body._LinearVelocity.Zero();
+		body._LinearVelocity = Vec3(-100.0f , 0.0f ,0.0f);
 		body._AngularVelocity.Zero();
 		body._InvMass = 0.0f;
-		body._Elasicity = 1.0f;
+		body._Elasicity = 0.01f;
 		body._Friction = 0.0f;
 
 
 
 		//Can still use these ground points to define the paremeters of the box that can apply the physics , however we generate the 
 		//shape using obj
-		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f),XMFLOAT3(1.0f, 1.0f , 1.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f),XMFLOAT3(2.0f, 2.0f , 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		_SceneBodies.push_back(body);
 
@@ -107,13 +107,77 @@ public:
 		body._LinearVelocity.Zero();
 		body._AngularVelocity.Zero();
 		body._InvMass = 1.0f;
-		body._Elasicity = 1.0f;
+		body._Elasicity = 0.01f;
 		body._Friction = 0.0f;
 
 
 		_SceneBodies.push_back(body);
+		AddStandardSandBox(_SceneBodies);
 	}
 	
+		void AddStandardSandBox(std::vector< Body > &bodies) 
+		{
+		
+
+			XMFLOAT4 Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+			XMFLOAT4 Diffuse = XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f);
+			XMFLOAT4 Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+
+			FLOAT SpecularPower = 10.0f;
+
+			Surface surface = Surface(Ambient, Diffuse, Specular, SpecularPower);
+
+			Body body;
+
+		body._Position = Vec3(0, 0, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.5f;
+		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(2.0f, 2.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+		bodies.push_back(body);
+
+		body._Position = Vec3(50, 0, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.0f;
+		bodies.push_back(body);
+
+		body._Position = Vec3(-50, 0, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.0f;
+		bodies.push_back(body);
+
+		body._Position = Vec3(0, 25, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.0f;
+		bodies.push_back(body);
+
+		body._Position = Vec3(0, -25, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.0f;
+		bodies.push_back(body);
+
+	}
+
 	void Update(float delta_time) override;
 	
 	void ResolveContacts(Contact contact)
