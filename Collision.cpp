@@ -197,9 +197,7 @@ bool Collision::Intersect(Body* A, Body* B, float dt, Contact& contact)
 
 		Vec3 ab = B->_Position - A->_Position;
 		float r = (point_on_a - point_on_b).GetMagnitude();
-		contact._SeperationDistance = -r;
+		contact._SeperationDistance = r;
 	}
-
 	return false;
-
 }

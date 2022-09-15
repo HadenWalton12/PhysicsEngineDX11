@@ -24,16 +24,16 @@ Vec3 ShapeBox::Support(const Vec3& direction, const Vec3& position, const Quat* 
 			max_point = point;
 		}
 
-
-		Vec3 normal = direction;
-		normal.Normalize();
-
-		//Bias value/term is used to expand or shrink the size the apparent size of an object, used to accurately calculate the contact normal.
-		//The Bias is used to accurately project the value
-		normal += bias;
-
-		return max_point + normal;
 	}
+
+	Vec3 normal = direction;
+	normal.Normalize();
+
+	//Bias value/term is used to expand or shrink the size the apparent size of an object, used to accurately calculate the contact normal.
+	//The Bias is used to accurately project the value
+	normal *= bias;
+
+	return max_point + normal;
 }
 //Builds Box Shape and Its points, bound to the object
 void ShapeBox::Build(const Vec3* points, const int num)
@@ -46,8 +46,8 @@ void ShapeBox::Build(const Vec3* points, const int num)
 	_BoxPoints.clear();
 
 	_BoxPoints.push_back(Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.mins.z));
-	_BoxPoints.push_back(Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.mins.z));
-	_BoxPoints.push_back(Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.mins.z));
+	_BoxPoints.push_back(Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.mins.z));
+	_BoxPoints.push_back(Vec3(_BoxBounds.mins.x, _BoxBounds.maxs.y, _BoxBounds.mins.z));
 	_BoxPoints.push_back(Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.maxs.z));
 
 	_BoxPoints.push_back(Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.maxs.z));
@@ -97,13 +97,13 @@ Mat3 ShapeBox::InertiaTensor()
 	cm.z = (_BoxBounds.maxs.z + _BoxBounds.mins.z) * 0.5f;
 
 	//Claultating the displacement from centre of mass to the origin of box
-	const Vec3 R = Vec3(0.0f, 0.0f, 0.0f) = cm;
+	const Vec3 R = Vec3(0.0f, 0.0f, 0.0f) - cm;
 	const float R2 = R.GetLengthSqr();
 
 	Mat3 pat_tensor;
 	pat_tensor.rows[0] = Vec3(R2 - R.x * R.x , R.x * R.y , R.x * R.z);
-	pat_tensor.rows[0] = Vec3(R.y * R.x, R2 - R.y * R.y, R.y * R.z);
-	pat_tensor.rows[0] = Vec3(R.z * R.x, R.z * R.y, R2 - R.z * R.z);
+	pat_tensor.rows[1] = Vec3(R.y * R.x, R2 - R.y * R.y, R.y * R.z);
+	pat_tensor.rows[2] = Vec3(R.z * R.x, R.z * R.y, R2 - R.z * R.z);
 
 	//Adding centre of mass tensor and parallel axis theorm tensor together, giving resultant mass tensor
 	tensor += pat_tensor;
@@ -116,12 +116,12 @@ Bounds ShapeBox::GetBounds(const Vec3& position, const Quat& orientation) const
 
 	corners[0] = Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
 	corners[1] = Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.maxs.z);
-	corners[2] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
+	corners[2] = Vec3(_BoxBounds.mins.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
 	corners[3] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
 
 	corners[4] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.maxs.z);
 	corners[5] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
-	corners[6] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
+	corners[6] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.maxs.z);
 	corners[7] = Vec3(_BoxBounds.mins.x, _BoxBounds.maxs.y, _BoxBounds.maxs.z);
 
 	Bounds bounds;

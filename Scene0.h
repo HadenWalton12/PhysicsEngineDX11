@@ -20,10 +20,10 @@ static const float h = 25;
 
 static const Vec3 _GroundBox[] =
 {
-	Vec3(-w , -h ,0),
-	Vec3(w , -h ,0),
-	Vec3(-w , h ,0),
-	Vec3(w , h ,-1)
+	Vec3(1 , 1 ,0),
+	Vec3(1 , 1 ,0),
+	Vec3(1 , 1 ,0),
+	Vec3(1 , 1 ,-1)
 };
 
 
@@ -55,64 +55,61 @@ public:
 		_Camera_Direction = XMFLOAT3(0.0f, -0.01f, 0.01f);
 		_SceneCamera = new Camera(_Camera_Position, _Camera_Direction);
 
-		//body._Position = Vec3(0.0f, 25, 0.0f);
-		//body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		//body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
-		//body._InvMass = 1.0f;
-		//body._Elasicity = 0.0f;
-		//body._Friction = 0.5f;
-		//body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(0.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-		//
-		////_SceneBodies.push_back(body);
-		//
-		//body._Position = Vec3(4.0f, 25, 0.0f);
-		//body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		//body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
-		//body._InvMass = 1.0f;
-		//body._Elasicity = 0.0f;
-		//body._Friction = 0.5f;
-		//body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(1.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)); 
-		//
-		////_SceneBodies.push_back(body);
-
-		//body._Position = Vec3(0.0f, -20.0f, 0.0f);
-		//body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		//body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
-		//body._InvMass = 0.0f;
-		//body._Elasicity = 0.0f;
-		//body._Friction = 0.5f;
-		//body._Shape = new ShapeSphere(10.0f, surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, -20.0f, 0.0f), XMFLOAT3(10.0f, 10.0f, 10.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-		
-		//_SceneBodies.push_back(body);
-
 		Body body;
-		body._Position = Vec3(0.0f, 0.0f, 0.0f);
+
+		body._Position = Vec3(0.0f, 25, 0.0f);
 		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		body._LinearVelocity = Vec3(-100.0f , 0.0f ,0.0f);
-		body._AngularVelocity.Zero();
-		body._InvMass = 0.0f;
-		body._Elasicity = 0.01f;
-		body._Friction = 0.0f;
-
-
-
-		//Can still use these ground points to define the paremeters of the box that can apply the physics , however we generate the 
-		//shape using obj
-		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f),XMFLOAT3(2.0f, 2.0f , 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
+		body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
+		body._InvMass = 1.0f;
+		body._Elasicity = 0.0f;
+		body._Friction = 0.5f;
+		body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(0.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		
+		_SceneBodies.push_back(body);
+		
+		body._Position = Vec3(4.0f, 25, 0.0f);
+		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
+		body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
+		body._InvMass = 1.0f;
+		body._Elasicity = 0.0f;
+		body._Friction = 0.5f;
+		body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(1.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)); 
+		
 		_SceneBodies.push_back(body);
 
-		body._Position = Vec3(0.0f, 10.0f, 0.0f);
+		body._Position = Vec3(0.0f, -20.0f, 0.0f);
 		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
+		body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
+		body._InvMass = 0.0f;
+		body._Elasicity = 0.0f;
+		body._Friction = 0.5f;
+		body._Shape = new ShapeSphere(10.0f, surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, -20.0f, 0.0f), XMFLOAT3(10.0f, 10.0f, 10.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		
+		_SceneBodies.push_back(body);
+
+
+		body._Position = Vec3(-5, 0, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
 		body._LinearVelocity.Zero();
 		body._AngularVelocity.Zero();
 		body._InvMass = 1.0f;
-		body._Elasicity = 0.01f;
-		body._Friction = 0.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.5f;
+		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+
 
 
 		_SceneBodies.push_back(body);
-		AddStandardSandBox(_SceneBodies);
+
+		body._Position = Vec3(-5, 5, 0);
+		body._Orientation = Quat(0, 0, 0, 1);
+		body._LinearVelocity.Zero();
+		body._AngularVelocity.Zero();
+		body._InvMass = 1.0f;
+		body._Elasicity = 0.5f;
+		body._Friction = 0.5f;
+		_SceneBodies.push_back(body);
+
 	}
 	
 		void AddStandardSandBox(std::vector< Body > &bodies) 
@@ -291,17 +288,17 @@ public:
 	void PollInput(float delta_time) override
 	{
 		if (GetAsyncKeyState('W')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[3];
 			body->AddImpulseLinear(Vec3(0.0f, 1.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('A')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[3];
 			body->AddImpulseLinear(Vec3(-1.0f, 0.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('E')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[3];
 			body->AddImpulseLinear(Vec3(0.0f, 0.0f, 1.0f));
 
 		}
@@ -311,7 +308,7 @@ public:
 
 		}
 		if (GetAsyncKeyState('D')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[3];
 			body->AddImpulseLinear(Vec3(1.0f, 0.0f, 0.0f));
 
 		}
@@ -321,7 +318,7 @@ public:
 
 		}
 		if (GetAsyncKeyState('X')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[1];
 			body->AddImpulseAngular(Vec3(0.0f, 0.001f, 0.0f));
 
 		}
@@ -331,7 +328,7 @@ public:
 
 		}
 		if (GetAsyncKeyState('C')) {
-			Body* body = &_SceneBodies[0];
+			Body* body = &_SceneBodies[1];
 			body->_Position = Vec3(0.0f, 0.001f, 0.0f);
 
 		}
