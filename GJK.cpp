@@ -1,5 +1,7 @@
 #include "GJK.h"
 
+//ALL CODE IS FINE HERE
+
 //Signed Volumes - Prior to learning GJK algorithm , a predeccessor algorithm not utilised anymore is signed volume algorithm.
 //In order for GJK to work , it needs the projection of origins to the simplexes we use, The reason for this since GJK needs to know
 //the shortest distance/direction to an origin for any given simplex
@@ -630,6 +632,8 @@ void GJK_ClosestPoints(const Body* body_a, const Body* body_b, Vec3& point_on_a,
 
 
 }
+
+
 
 /*
 	Barycentric Coordinates

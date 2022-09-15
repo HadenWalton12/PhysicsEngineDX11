@@ -76,7 +76,8 @@ float ShapeBox::FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& dir
 	}
 	return max_speed;
 }
-Mat3 ShapeBox::InertiaTensor()
+
+Mat3 ShapeBox::InertiaTensor() const
 {
 	//Mass Matrix For box centered is around zero
 	const float dx = _BoxBounds.maxs.x - _BoxBounds.mins.x;

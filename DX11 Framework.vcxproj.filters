@@ -197,6 +197,12 @@
     <ClInclude Include="GJK.h">
       <Filter>HeaderFiles\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Header.h">
+      <Filter>SourceFiles\Physics\Shape</Filter>
+    </ClInclude>
+    <ClInclude Include="Shapes.h">
+      <Filter>HeaderFiles\Physics\Shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -260,12 +266,10 @@
     <ClCompile Include="ShapeConvex.cpp">
       <Filter>SourceFiles\Physics\Shape</Filter>
     </ClCompile>
-    <ClCompile Include="Shape.cpp">
-      <Filter>SourceFiles\Physics\Shape</Filter>
-    </ClCompile>
     <ClCompile Include="GJK.cpp">
       <Filter>SourceFiles\Physics</Filter>
     </ClCompile>
+    <ClCompile Include="Shape.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

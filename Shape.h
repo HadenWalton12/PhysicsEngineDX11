@@ -1,8 +1,10 @@
 #pragma once
-#include "Object.h"
+
 #include "Vector.h"
 #include "Quanternion.h"
 #include "Bounds.h"
+#include <vector>
+#include "Object.h"
 
 //Parent class hold all reference to the key invidual segments of each class. Each child shape class will hold attritbutes inate to the shape.
 class Shape
@@ -38,10 +40,12 @@ public:
 	//the support function.
 	virtual float FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& directions) const { return 0.0f; }
 
+     
+
 
 
 	//Holds self type inheritated to fill value in child 
-	ShapeType type;
+	//virtual ShapeType type;
 
 
 	virtual Bounds GetBounds(const Vec3& pos, const Quat& orient)  const = 0;
@@ -52,13 +56,13 @@ public:
 	//Inate Objects Will Be Passed Down To Child CLasses, Security Access Modifer Enabling Inheritance Principle
 	Object* _Object;
 
+	Mat3 _InertiaTensor;
+
+	virtual Mat3 _GetInertiaTensor() { return _InertiaTensor; };
+
+protected:
+
 	//Will Be Explained Later - However an integral value to the Physics System
 	Vec3 _CentreOfMass;
-
-	virtual Mat3 InertiaTensor()
-	{
-		Mat3 o;
-		return o;
-	}
 
 };

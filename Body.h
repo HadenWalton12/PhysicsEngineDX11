@@ -1,6 +1,8 @@
 #pragma once
-#include "Shape.h"
-
+#include "Vector.h"
+#include "Quanternion.h"
+#include "Bounds.h"
+#include "Shapes.h"
 //A physics simulation , or any applied physics within a game is a collection of bodies that essentially colide and get manipulated by environmental ingame factors.
 //Each body has a position within space , represented utilising vectors in cartesian coordinates (since this is a 3D space, we utilise vec3 class for all
 //positional related manipulations/changes).
@@ -72,114 +74,3 @@ public:
 	Vec3 BodySpaceToWorldSpace(const Vec3& world_pt) const;
 
 };
-
-//
-////Signed Volumes
-////The Signed Volumes Algorithm
-////
-////
-////
-////
-//
-//Vec2 SignedVolume1D(const Vec3 & s1 , const Vec3 & s2)
-//{
-//	//Ray From a - b
-//	Vec3 ab = s2 - s1;
-//	//Ray from to a to origin 
-//	Vec3 ap = Vec3(0.0f);
-//	//Projection of the origin onto the line
-//	Vec3 p0 = s1 + ab * ab.Dot(ap) / ab.GetLengthSqr();
-//
-//	//Choose the axis with the greatest difference/length
-//	int id = 0;
-//	
-//	float mu_max = 0;
-//
-//	for (int i = 0; i < 3 ; i++)
-//	{
-//		float mu = s2[i] - s1[i];
-//		if (mu * mu > mu_max * mu_max)
-//		{
-//			mu_max = mu;
-//			id = i;
-//		}
-//	}
-//
-//	//Project the simplex points and projected origin onto the axis with the greatest length
-//	const float a = s1[id];
-//	const float b = s2[id];
-//	const float p = p0[id];
-//
-//	//Get the signed distance from a to p to b
-//	const float C1 = p - a;
-//	const float C2 = b - p;
-//
-//	//If p is between [a,b]
-//	if ((p > a && p < b) || (p > b && p < a))
-//	{
-//		Vec2 lambdas;
-//		
-//		lambdas[0] = C2 / mu_max;
-//		lambdas[1] = C1 / mu_max;
-//
-//		return lambdas;
-//	}
-//}
-//Vec2 SignedVolume1D(const Vec3& s1, const Vec3& s2)
-//{
-//	//Calculated difference between both points , ray from a - b
-//	Vec3 ab = s2 - s1;
-//
-//	//Calculated , ray from a  to origin
-//	Vec3 ap = Vec3(0.0f) - s1;
-//
-//	//Projection of origin onto the line
-//	Vec3 p0 = s1 + ab * ab.Dot(ap) / ab.GetLengthSqr();
-//
-//
-//	//Choosing the axis with greatest length/distance
-//
-//	int id = 0;
-//	float mu_max = 0;
-//	for (int i = 0; i < 3; i++)
-//	{
-//		//Current ray distance , used in condition
-//		float mu = s2[i] - s1[i];
-//		if (mu * mu > mu_max * mu_max)
-//		{
-//			//Give us line segment / simple with greatest length/distance
-//			mu_max = mu;
-//			id = i;
-//
-//		}
-//	}
-//
-//	//Project the simplex points and projected origin onto the "axis" with the greastest length
-//
-//	const float a = s1[id];
-//	const float b = s2[id];
-//	const float p = p0[id];
-//
-//	//Get the signed distance from a to p and from p to b
-//	const float C1 = p - a;
-//	const float C2 = b - p;
-//
-//	//Checking between if p is between a or b
-//	if ((p > a && p < b) || (p > b && p < a))
-//	{
-//		//lambdas - anomynous function
-//		Vec2 lambdas;
-//		lambdas[0] = C2 / mu_max;
-//		lambdas[1] = C1 / mu_max;
-//		return lambdas;
-//	}
-//
-//	//if p is on the far side of a, we return the following
-//	if ((a <= b && p <= a) || (a >= b && p >= a))
-//	{
-//		return Vec2(1.0f, 0.0f);
-//	}
-//
-//	//p must be on far side of b
-//	return Vec2(0.0f, 1.0f);
-//}

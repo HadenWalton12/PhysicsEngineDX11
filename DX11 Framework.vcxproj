@@ -413,6 +413,7 @@
     <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="GJK.h" />
+    <ClInclude Include="Header.h" />
     <ClInclude Include="IMGuiManager.h" />
     <ClInclude Include="IMGui\imconfig.h" />
     <ClInclude Include="IMGui\imgui.h" />
@@ -438,6 +439,7 @@
     <ClInclude Include="Shape.h" />
     <ClInclude Include="ShapeBox.h" />
     <ClInclude Include="ShapeConvex.h" />
+    <ClInclude Include="Shapes.h" />
     <ClInclude Include="ShapeSphere.h" />
     <ClInclude Include="StaticCamera.h" />
     <ClInclude Include="Structures.h" />

@@ -16,14 +16,14 @@ void Body::ApplyImpulse(Vec3 impulse_point, Vec3 impulse)
 
 Mat3 Body::GetInverseInertiaTensorBodySpace()
 {
-	Mat3 inertia_tensor = _Shape->InertiaTensor();
+	Mat3 inertia_tensor = _Shape->_GetInertiaTensor();
 	Mat3 inverse_inertia_tensor = inertia_tensor.Inverse() * _InvMass;
 	return inverse_inertia_tensor;
 }
 
 Mat3 Body::GetInverseInertiaTensorWorldSpace()
 {
-	Mat3 inertia_tensor = _Shape->InertiaTensor();
+	Mat3 inertia_tensor = _Shape->_GetInertiaTensor();
 	Mat3 inverse_inertia_tensor = inertia_tensor.Inverse() * _InvMass;
 	Mat3 orient = _Orientation.ToMat3() * _InvMass;
 	inverse_inertia_tensor = orient * inverse_inertia_tensor * orient.Transpose();
@@ -65,10 +65,10 @@ void Body::Update(float dt_sec)
 	Vec3 position_cm = GetCenterOfMassWorldSpace();
 	Vec3 cm_to_pos = _Position - position_cm;
 
-
+	
 	//Handles all maths regarding updating the angular velocity and orientation of the body
 	Mat3 orientation = _Orientation.ToMat3();
-	Mat3 inertia_tensor = orientation * _Shape->InertiaTensor() * orientation.Transpose();
+	Mat3 inertia_tensor = orientation * _Shape->_GetInertiaTensor() * orientation.Transpose();
 	Vec3 alpha = inertia_tensor.Inverse() * (_AngularVelocity.Cross(inertia_tensor * _AngularVelocity ));
 	Vec3 angle = alpha * dt_sec;
 

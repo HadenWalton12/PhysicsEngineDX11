@@ -1,15 +1,36 @@
 #pragma once 
+
 #include "Shape.h"
-#include "GJK.h"
+
+struct tri_t
+{
+	int a;
+	int b;
+	int c;
+};
+
+struct edge_t
+{
+	int a;
+	int b;
+
+	//used to assign edges with their values
+	bool operator == (const edge_t& rhs) const
+	{
+		return ((a == rhs.a && b == rhs.b) || (a == rhs.b && b == rhs.a));
+	}
+
+
+};
+
+
 
 class ShapeConvex : public Shape
 {
 
 public:
 
-	ShapeType _ShapeType;
-	std::vector<Vec3> _BoxPoints;
-	Bounds _BoxBounds;
+
 
 
 	//Used To Initialise The Object
@@ -44,7 +65,8 @@ public:
 	float FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& directions) const override;
 
 	//Box Has Different InertiaTensor , Remember The Inertia Tensor Is Considered The Mass Matrix , Used TO Distribute Mass Correctly Throughout The OBject
-	Mat3 InertiaTensor() override;
+	Mat3 InertiaTensor() const { return _InertiaTensor; };
+	Mat3 _GetInertiaTensor() override { return _InertiaTensor; }
 	Bounds GetBounds(const Vec3& pos, const Quat& orient)  const override;
 	Bounds GetBounds() const override;
 	ShapeType GetType() const override;
@@ -66,7 +88,11 @@ public:
 	Vec3 CalculateCentreOfMass(const std::vector<Vec3>& points, const std::vector<tri_t>& triangles);
 	Mat3 CalculateInertiaTensor(const std::vector<Vec3>& points, const std::vector<tri_t>& triangles, const Vec3& cm);
 
-
+public:
+	Mat3 _InertiaTensor;
+	ShapeType _ShapeType;
+	std::vector<Vec3> _BoxPoints;
+	Bounds _BoxBounds;
 
 };
 

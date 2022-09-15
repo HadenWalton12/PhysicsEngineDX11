@@ -1,16 +1,15 @@
 #pragma once
 #include "Shape.h"
+
 class ShapeSphere : public Shape
 {
 public:
 
 	ShapeType _ShapeType;
 	float _Radius;
-
-
 	//Used To Initialise The Object
 
-	ShapeSphere(float radius, Surface surface, RenderCommands* render, TextureComponent* tex, XMFLOAT3 translate, XMFLOAT3 scale, XMFLOAT3 rotate)
+	explicit ShapeSphere(float radius, Surface surface, RenderCommands* render, TextureComponent* tex, XMFLOAT3 translate, XMFLOAT3 scale, XMFLOAT3 rotate)
 	{
 		_Radius = radius;
 		_CentreOfMass.Zero();
@@ -34,12 +33,13 @@ public:
 	//of the cube
 	Vec3 Support(const Vec3& direction, const Vec3& position, const Quat* orientation, const float bias) const override;
 
-
-	Mat3 InertiaTensor() override;
+	Mat3 _GetInertiaTensor() override { return _InertiaTensor; }
 
 	Bounds GetBounds(const Vec3& pos, const Quat& orient)  const override;
 	Bounds GetBounds() const override;
 	
 	ShapeType GetType() const override;
+
+
 
 };

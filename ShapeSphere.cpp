@@ -10,17 +10,17 @@ Vec3 ShapeSphere::Support(const Vec3& direction, const Vec3& position, const Qua
 	//Bias value/term is used to expand or shrink the size the apparent size of an object, used to accurately calculate the contact normal.
 	return (position + direction * (_Radius + bias));
 }
-
-Mat3 ShapeSphere::InertiaTensor()
-{
-	Mat3 Tensor;
-	Tensor.Zero();
-
-	Tensor.rows[0][0] = 2.0f * _Radius * _Radius / 5.0f;
-	Tensor.rows[1][1] = 2.0f * _Radius * _Radius / 5.0f;
-	Tensor.rows[2][2] = 2.0f * _Radius * _Radius / 5.0f;
-	return Tensor;
-}
+//
+//Mat3 ShapeSphere::InertiaTensor() const
+//{
+//	Mat3 Tensor;
+//	Tensor.Zero();
+//
+//	Tensor.rows[0][0] = 2.0f * _Radius * _Radius / 5.0f;
+//	Tensor.rows[1][1] = 2.0f * _Radius * _Radius / 5.0f;
+//	Tensor.rows[2][2] = 2.0f * _Radius * _Radius / 5.0f;
+//	return Tensor;
+//}
 
 Bounds ShapeSphere::GetBounds(const Vec3& pos, const Quat& orient) const
 {

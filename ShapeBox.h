@@ -1,7 +1,5 @@
 #pragma once
-
 #include "Shape.h"
-
 
 class ShapeBox : public Shape
 {
@@ -14,7 +12,7 @@ public:
 
 	//Used To Initialise The Object
 
-	ShapeBox(const Vec3 * points , const int num, Surface surface, RenderCommands* render, TextureComponent* tex, XMFLOAT3 translate, XMFLOAT3 scale, XMFLOAT3 rotate)
+	explicit ShapeBox(const Vec3 * points , const int num, Surface surface, RenderCommands* render, TextureComponent* tex, XMFLOAT3 translate, XMFLOAT3 scale, XMFLOAT3 rotate)
 	{
 		Build(points , num);
 		_CentreOfMass.Zero();
@@ -37,14 +35,20 @@ public:
 	//of the cube
 	Vec3 Support(const Vec3& direction, const Vec3& position, const Quat* orientation, const float bias) const override;
 
-	void Build(const Vec3* points, const int num) override;
+	void Build(const Vec3* points, const int num);
 
 
 
 	float FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& directions) const override;
 	
 	//Box Has Different InertiaTensor , Remember The Inertia Tensor Is Considered The Mass Matrix , Used TO Distribute Mass Correctly Throughout The OBject
-	Mat3 InertiaTensor() override;
+
+	Mat3 InertiaTensor() const;
+
+	Mat3 _InertiaTensor = InertiaTensor();
+
+	Mat3 _GetInertiaTensor() override { return _InertiaTensor; }
+	
 	Bounds GetBounds(const Vec3& pos, const Quat& orient)  const override;
 	Bounds GetBounds() const override;
 	ShapeType GetType() const override;

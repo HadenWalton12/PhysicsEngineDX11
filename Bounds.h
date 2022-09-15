@@ -1,5 +1,10 @@
+
 #pragma once
+#include <math.h>
+#include <assert.h>
 #include "Vector.h"
+#include <vector>
+
 class Bounds
 {
 public:
