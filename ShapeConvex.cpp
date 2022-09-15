@@ -87,40 +87,40 @@ float ShapeConvex::FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& 
 	return max_speed;
 }
 
-Mat3 ShapeConvex::InertiaTensor()
-{
-	//Mass Matrix For box centered is around zero
-	const float dx = _BoxBounds.maxs.x - _BoxBounds.mins.x;
-	const float dy = _BoxBounds.maxs.y - _BoxBounds.mins.y;
-	const float dz = _BoxBounds.maxs.z - _BoxBounds.mins.z;
-
-	Mat3 tensor;
-	tensor.Zero();
-
-	tensor.rows[0][0] = (dy * dy + dz * dz) / 12.0f;
-	tensor.rows[1][1] = (dx * dx + dz * dz) / 12.0f;
-	tensor.rows[2][2] = (dx * dx + dy * dy) / 12.0f;
-
-	//Using Parallel axis theorm to get mass matrix for box that is not centred around object.
-	Vec3 cm;
-	cm.x = (_BoxBounds.maxs.x + _BoxBounds.mins.x) * 0.5f;
-	cm.y = (_BoxBounds.maxs.y + _BoxBounds.mins.y) * 0.5f;
-	cm.z = (_BoxBounds.maxs.z + _BoxBounds.mins.z) * 0.5f;
-
-	//Claultating the displacement from centre of mass to the origin of box
-	const Vec3 R = Vec3(0.0f, 0.0f, 0.0f) = cm;
-	const float R2 = R.GetLengthSqr();
-
-	Mat3 pat_tensor;
-	pat_tensor.rows[0] = Vec3(R2 - R.x * R.x, R.x * R.y, R.x * R.z);
-	pat_tensor.rows[0] = Vec3(R.y * R.x, R2 - R.y * R.y, R.y * R.z);
-	pat_tensor.rows[0] = Vec3(R.z * R.x, R.z * R.y, R2 - R.z * R.z);
-
-	//Adding centre of mass tensor and parallel axis theorm tensor together, giving resultant mass tensor
-	tensor += pat_tensor;
-	return tensor;
-
-}
+//Mat3 ShapeConvex::InertiaTensor()
+//{
+//	//Mass Matrix For box centered is around zero
+//	const float dx = _BoxBounds.maxs.x - _BoxBounds.mins.x;
+//	const float dy = _BoxBounds.maxs.y - _BoxBounds.mins.y;
+//	const float dz = _BoxBounds.maxs.z - _BoxBounds.mins.z;
+//
+//	Mat3 tensor;
+//	tensor.Zero();
+//
+//	tensor.rows[0][0] = (dy * dy + dz * dz) / 12.0f;
+//	tensor.rows[1][1] = (dx * dx + dz * dz) / 12.0f;
+//	tensor.rows[2][2] = (dx * dx + dy * dy) / 12.0f;
+//
+//	//Using Parallel axis theorm to get mass matrix for box that is not centred around object.
+//	Vec3 cm;
+//	cm.x = (_BoxBounds.maxs.x + _BoxBounds.mins.x) * 0.5f;
+//	cm.y = (_BoxBounds.maxs.y + _BoxBounds.mins.y) * 0.5f;
+//	cm.z = (_BoxBounds.maxs.z + _BoxBounds.mins.z) * 0.5f;
+//
+//	//Claultating the displacement from centre of mass to the origin of box
+//	const Vec3 R = Vec3(0.0f, 0.0f, 0.0f) = cm;
+//	const float R2 = R.GetLengthSqr();
+//
+//	Mat3 pat_tensor;
+//	pat_tensor.rows[0] = Vec3(R2 - R.x * R.x, R.x * R.y, R.x * R.z);
+//	pat_tensor.rows[0] = Vec3(R.y * R.x, R2 - R.y * R.y, R.y * R.z);
+//	pat_tensor.rows[0] = Vec3(R.z * R.x, R.z * R.y, R2 - R.z * R.z);
+//
+//	//Adding centre of mass tensor and parallel axis theorm tensor together, giving resultant mass tensor
+//	tensor += pat_tensor;
+//	return tensor;
+//
+//}
 
 
 //Getting bounds is used to define the boundaries for shape, applying it to corners while adding the orientation to accurately define these points
@@ -130,12 +130,12 @@ Bounds ShapeConvex::GetBounds(const Vec3& position, const Quat& orientation) con
 
 	corners[0] = Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
 	corners[1] = Vec3(_BoxBounds.mins.x, _BoxBounds.mins.y, _BoxBounds.maxs.z);
-	corners[2] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
+	corners[2] = Vec3(_BoxBounds.mins.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
 	corners[4] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
 
 	corners[5] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.maxs.z);
 	corners[6] = Vec3(_BoxBounds.maxs.x, _BoxBounds.maxs.y, _BoxBounds.mins.z);
-	corners[7] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.mins.z);
+	corners[7] = Vec3(_BoxBounds.maxs.x, _BoxBounds.mins.y, _BoxBounds.maxs.z);
 	corners[8] = Vec3(_BoxBounds.mins.x, _BoxBounds.maxs.y, _BoxBounds.maxs.z);
 
 	Bounds bounds;
@@ -266,9 +266,9 @@ int ShapeConvex::FindPointInFurthestDirection(const Vec3* point, const int num, 
 	//Max distance from give value from the given point
 
 	float max_distance = direction.Dot(point[0]);
-	for (int i = 0; i < num; i++)
+	for (int i = 1; i < num; i++)
 	{
-		float distance = direction.Dot(point[0]);
+		float distance = direction.Dot(point[i]);
 		//Replace new max distance point and change the ID to relevant point given in the current iteration of the loop
 		if (distance > max_distance)
 		{
@@ -309,7 +309,7 @@ Vec3 ShapeConvex::FindPointFurthestFromLine(const Vec3* points, const int num, c
 	//Find Distance / Max distance using function above , this will the highest/max distance for now to compare underneath with all other given points of the convex
 	float max_distance = DistanceFromLine(point_a, point_b, points[0]);
 
-	for (int i = 0; i < num; i++)
+	for (int i = 1; i < num; i++)
 	{
 
 		float distance = DistanceFromLine(point_a, point_b, points[i]);
@@ -359,13 +359,13 @@ Vec3 ShapeConvex::FindPointFurthestFromTriangle(const Vec3* points, const int nu
 
 
 	//Iterate current findings with aforementioned points given
-	for (int i = 0; i < num; i++)
+	for (int i = 1; i < num; i++)
 	{
 		float distance = DistanceFromTriangle(point_a, point_b, point_c, points[i]);
 
 		///If Doesnt Work Use this
 		//if (distance * distance  > max_distance * max_distance)
-		if (distance > max_distance)
+		if (distance * distance > max_distance * max_distance)
 		{
 
 
@@ -566,11 +566,11 @@ bool ShapeConvex::IsEdgeUnique(const std::vector<tri_t>& triangles, const std::v
 		edges[0].a = triangle.a;
 		edges[0].b = triangle.b;
 
-		edges[1].a = triangle.a;
-		edges[1].b = triangle.b;
+		edges[1].a = triangle.b;
+		edges[1].b = triangle.c;
 
-		edges[2].a = triangle.a;
-		edges[2].b = triangle.b;
+		edges[2].a = triangle.c;
+		edges[2].b = triangle.a;
 
 		for (int e = 0; e < 3; e++)
 		{
