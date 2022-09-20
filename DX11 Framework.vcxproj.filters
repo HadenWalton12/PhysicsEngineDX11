@@ -270,6 +270,9 @@
       <Filter>SourceFiles\Physics</Filter>
     </ClCompile>
     <ClCompile Include="Shape.cpp" />
+    <ClCompile Include="Shapes.cpp">
+      <Filter>SourceFiles\Physics\Shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">

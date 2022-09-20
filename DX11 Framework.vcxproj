@@ -392,6 +392,7 @@
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="ShapeBox.cpp" />
     <ClCompile Include="ShapeConvex.cpp" />
+    <ClCompile Include="Shapes.cpp" />
     <ClCompile Include="ShapeSphere.cpp" />
     <ClCompile Include="TextureComponent.cpp" />
   </ItemGroup>

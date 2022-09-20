@@ -74,3 +74,5 @@ public:
 	Vec3 BodySpaceToWorldSpace(const Vec3& world_pt) const;
 
 };
+
+//Checked
