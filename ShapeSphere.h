@@ -9,7 +9,7 @@ public:
 	float _Radius;
 	//Used To Initialise The Object
 
-	explicit ShapeSphere(float radius, Surface surface, RenderCommands* render, TextureComponent* tex, XMFLOAT3 translate, XMFLOAT3 scale, XMFLOAT3 rotate)
+	explicit ShapeSphere(float radius, Surface surface, RenderCommands* render, TextureComponent* tex,XMFLOAT3 scale)
 	{
 		_Radius = radius;
 		_CentreOfMass.Zero();
@@ -22,7 +22,7 @@ public:
 		_Object->SetVertexShader(L"DX11 Framework.fx");
 		_Object->SetPixelShader(L"DX11 Framework.fx");
 
-		_Object->SetTransformation(translate, scale, rotate);
+		_Object->SetScale( scale);
 
 		//Allows us to get the assigned type of Shape
 		_ShapeType = SHAPE_SPHERE;

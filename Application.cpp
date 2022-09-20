@@ -107,6 +107,15 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
     _pSceneManager = new SceneManager(_pRenderCommands, _pGUIManager, _pDX11->_pDevice);
     //Initial Scene
     _pCurrentScene = _pScene0;
+    _Models.reserve(_pScene0->_SceneBodies.size());
+    for (int i = 0; i < _pScene0->_SceneBodies.size(); i++) {
+        Model* model = new Model();
+        model->BuildFromShape(_pScene0->_SceneBodies[i]._Shape);
+        model->MakeVertexBuffer(_pDX11->_pDevice);
+        model->DrawIndexed(_pDX11->_pDevice);
+
+        _Models.push_back(model);
+    }
 
     return S_OK;
 }
@@ -227,7 +236,7 @@ void Application::RenderFrame()
     _pCurrentScene->PollInput(dt_sec * 0.5f);
     int startTime = GetTimeMicroseconds();
     //Update Current Scene
-    _pCurrentScene->Update(dt_sec * 0.5);
+    _pCurrentScene->Update(dt_sec * 0.5 , _Models);
     int endTime = GetTimeMicroseconds();
 
     dt_us = (float)endTime - (float)startTime;

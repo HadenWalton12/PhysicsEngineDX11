@@ -387,6 +387,7 @@
     <ClCompile Include="IMGui\imgui_tables.cpp" />
     <ClCompile Include="IMGui\imgui_widgets.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="Scene0.cpp" />
     <ClCompile Include="Shape.cpp" />
@@ -428,6 +429,7 @@
     <ClInclude Include="Materials.h" />
     <ClInclude Include="Matrix.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="PixelShader.h" />

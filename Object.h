@@ -6,7 +6,7 @@
 #include "Lighting.h"
 #include "TextureComponent.h"
 #include "OBJLoader.h"
-
+#include "Model.h"
 #include "PixelShader.h"
 #include "VertexShader.h"
 
@@ -25,6 +25,12 @@ struct Object
 	RenderCommands* _pRenderCommands;
 	TextureComponent* _Tex;
 	Object() = default;
+	Object(RenderCommands* render_commands, wchar_t* texture, TextureComponent* Tex)
+	{
+		_Tex = Tex;
+		_pRenderCommands = render_commands;
+		CreateTexture(texture);
+	}
 
 	Object(RenderCommands* render_commands, wchar_t* texture, TextureComponent* Tex, char* object)
 	{
@@ -92,7 +98,27 @@ struct Object
 	}
 
 
-	void Draw(Camera* camera)
+	void Draw(Camera* camera ,Model *model)
+	{
+		UINT stride = sizeof(SimpleVertex);
+		UINT offset = 0;
+		
+		_pRenderCommands->BindVertexShader(_VertexShader.GetVertexShader());
+		_pRenderCommands->BindPixelShader(_PixelShader.GetPixelShader());
+		_pRenderCommands->UpdateConstantBuffer(camera, _ObjectTransformation.GetWorld(), _ObjectMaterial);
+		_pRenderCommands->GetDeviceContext()->IASetVertexBuffers(0, 1, &model->_MeshData.VertexBuffer, &stride, &offset);
+		_pRenderCommands->GetDeviceContext()->IASetIndexBuffer(model->_MeshData.IndexBuffer, DXGI_FORMAT_R16_UINT, 0);
+
+		if (_Tex != nullptr)
+		{
+			_Tex->BindTextures(0, _Textures.size(), _Textures, _pRenderCommands);
+
+		}
+
+		_pRenderCommands->GetDeviceContext()->DrawIndexed(_Mesh.IndexCount, 0, 0);
+
+	}
+		void Draw(Camera* camera)
 	{
 		UINT stride = sizeof(SimpleVertex);
 		UINT offset = 0;

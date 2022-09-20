@@ -26,6 +26,9 @@ public:
 	ID3D11DepthStencilView* _pDepthStencilView;				//Defines view resource that accesses a texture resource during depth stencil testing , Our depth data is bound to a texture object
 	ID3D11SamplerState* _pSamplerLinear;						//Bind to any shader stage (VS / PS) , used to bind reference of texture sample operations - We bind to PixelShader to accomidate per-pixel lighting
 
+	ID3D11DeviceContext * GetContext() { return _pDeviceContext; }
+	ID3D11Device* GetDevice() { return _pDevice; }
+
 	ID3D11Device* _pDevice;									    //Virtual Representation of Video Card , used to create resources for application , resources exuted using device context
 	ID3D11DeviceContext* _pDeviceContext;					    //Stores reference to DeviceContext , allow us to generate rendering commands to execute within application
 	ID3D11Buffer* _pConstantBuffer;								//Defines ConstantBuffer Storage 

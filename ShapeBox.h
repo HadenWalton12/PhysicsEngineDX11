@@ -18,7 +18,7 @@ public:
 		_CentreOfMass.Zero();
 
 		//Sets Up THe Object Bound To THis Shape , Replacing having to individualy define a shape in a scene class to the same length as this
-		_Object = new Object(render, L"Floor.dds", tex, "cube.Obj");
+		_Object = new Object(render, L"Floor.dds", tex);
 		_Object->SetSurface(surface.Ambient, surface.Diffuse, surface.Specular, surface.SpecularPower);
 
 		_Object->SetVertexShader(L"DX11 Framework.fx");
@@ -29,7 +29,17 @@ public:
 		//Allows us to get the assigned type of Shape
 		_ShapeType = SHAPE_BOX;
 	}
+	explicit ShapeBox(const Vec3* points, const int num, Surface surface, RenderCommands* render, TextureComponent* tex)
+	{
+		Build(points, num);
+		_Object = new Object(render, L"Floor.dds", tex);
+		_Object->SetSurface(surface.Ambient, surface.Diffuse, surface.Specular, surface.SpecularPower);
 
+		_Object->SetVertexShader(L"DX11 Framework.fx");
+		_Object->SetPixelShader(L"DX11 Framework.fx");
+		//Allows us to get the assigned type of Shape
+		_ShapeType = SHAPE_BOX;
+	}
 	//The Support Function allows us to find the point on a convex shaoe that is the furthest in a particular direction.
 	//For Example- Lets say our cube is moving -x , on the cube , this function will return a point on the cube that is the most furthest in that direction, anypoint on a surface
 	//of the cube

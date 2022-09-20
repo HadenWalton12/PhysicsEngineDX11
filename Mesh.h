@@ -4,6 +4,7 @@
 
 using namespace DirectX;
 
+
 struct MeshData
 {
 	ID3D11Buffer* VertexBuffer;

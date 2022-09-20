@@ -4,7 +4,7 @@
 #include "Object.h"
 #include "TextureComponent.h"
 #include <vector>
-
+#include "Model.h"
 /// <summary>
 /// Used to Hold/Manage the Functions of Scenes
 /// Scenes Still hold individual functionality , however share the common functions
@@ -37,7 +37,7 @@ public:
 	}
 
 
-	virtual void Update(float delta_time)
+	virtual void Update(float delta_time, std::vector<Model *> models)
 	{
 
 	}

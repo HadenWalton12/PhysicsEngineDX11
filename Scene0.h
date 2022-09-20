@@ -4,6 +4,7 @@
 #include "Shapes.h"
 #include <vector>
 #include "Collision.h"
+#include "Model.h"
 
 //Minkowski Addition/Sums
 // Within Geomtry , Minkowski sums is where two sets of position vectors within A & B are added together.
@@ -53,34 +54,41 @@ public:
 		_Camera_Direction = XMFLOAT3(0.0f, -0.01f, 0.01f);
 		_SceneCamera = new Camera(_Camera_Position, _Camera_Direction);
 
-		Body body;
-
-		body._Position = Vec3(0.0f, 25, 0.0f);
-		body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
-		body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
-		body._InvMass = 1.0f;
-		body._Elasicity = 0.0f;
-		body._Friction = 0.5f;
-		body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(0.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-		//body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-		_SceneBodies.push_back(body);
 		
+		//body._Position = Vec3(0.0f, 25, 0.0f);
+		//body._Orientation = Quat(0.0f, 0.0f, 0.0f, 1.0f);
+		//body._LinearVelocity = Vec3(0.0f, 0.0f, 0.0f);
+		//body._InvMass = 1.0f;
+		//body._Elasicity = 0.0f;
+		//body._Friction = 0.5f;
+		//body._Shape = new ShapeSphere(0.5f, surface, _pRenderCommand, _Tex,XMFLOAT3(0.0f, 25, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		////body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
 
+		//_SceneBodies.push_back(body);
+		//
+		//Body body;
 
+		//body._Position = Vec3(10, 0, 3);
+		//body._Orientation = Quat(0, 0, 0, 1);
+		//body._LinearVelocity = Vec3(-100, 0, 0);
+		//body._AngularVelocity = Vec3(0.0f, 0.0f, 0.0f);
+		//body._InvMass = 1.0f;
+		//body._Elasicity = 0.5f;
+		//body._Friction = 0.5f;
+		//body._Shape = new ShapeSphere(0.5f);
+		//_SceneBodies.push_back(body);
 
-		body._Position = Vec3(0, 0, 0);
-		body._Orientation = Quat(0, 0, 0, 1);
-		body._LinearVelocity.Zero();
-		body._AngularVelocity.Zero();
-		body._InvMass = 0.0f;
-		body._Elasicity = 0.5f;
-		body._Friction = 0.5f;
-		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(0.5f, 0.5f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//body._Position = Vec3(-10, 0, 3);
+		//body._Orientation = Quat(0, 0, 0, 1);
+		//body._LinearVelocity = Vec3(100, 0, 0);
+		//body._AngularVelocity = Vec3(0, 10, 0);
+		//body._InvMass = 1.0f;
+		//body._Elasicity = 0.5f;
+		//body._Friction = 0.5f;
+		//body._Shape = new ShapeConvex(g_diamond, sizeof(g_diamond) / sizeof(Vec3));
+		//_SceneBodies.push_back(body);
 
-
-
-		_SceneBodies.push_back(body);
+		AddStandardSandBox(_SceneBodies);
 
 
 	}
@@ -107,7 +115,7 @@ public:
 		body._InvMass = 0.0f;
 		body._Elasicity = 0.5f;
 		body._Friction = 0.5f;
-		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex, XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT3(2.0f, 2.0f, 2.0f), XMFLOAT3(0.0f, 0.0f, 0.0f));
+		body._Shape = new ShapeBox(_GroundBox, sizeof(_GroundBox), surface, _pRenderCommand, _Tex);
 
 		bodies.push_back(body);
 
@@ -149,7 +157,7 @@ public:
 
 	}
 
-	void Update(float delta_time) override;
+	void Update(float delta_time , std::vector<Model *> models) override;
 	
 	void ResolveContacts(Contact contact)
 	{
@@ -262,17 +270,17 @@ public:
 	void PollInput(float delta_time) override
 	{
 		if (GetAsyncKeyState('W')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseLinear(Vec3(0.0f, 1.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('A')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseLinear(Vec3(-1.0f, 0.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('E')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseLinear(Vec3(0.0f, 0.0f, 1.0f));
 
 		}
@@ -282,17 +290,17 @@ public:
 
 		}
 		if (GetAsyncKeyState('D')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseLinear(Vec3(1.0f, 0.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('S')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseLinear(Vec3(0.0f, -1.0f, 0.0f));
 
 		}
 		if (GetAsyncKeyState('X')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->AddImpulseAngular(Vec3(0.0f, 0.001f, 0.0f));
 
 		}
@@ -302,11 +310,12 @@ public:
 
 		}
 		if (GetAsyncKeyState('C')) {
-			Body* body = &_SceneBodies[1];
+			Body* body = &_SceneBodies[0];
 			body->_Position = Vec3(0.0f, 0.001f, 0.0f);
 
 		}
 	}
+	std::vector<Body> _SceneBodies;
 
 private:
 
@@ -323,6 +332,5 @@ private:
 
 	Object* _Sphere;
 	Object* _Plane;
-	std::vector<Body> _SceneBodies;
 };
 

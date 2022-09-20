@@ -42,9 +42,6 @@
     <Filter Include="HeaderFiles\DX11">
       <UniqueIdentifier>{835ce5e8-f05b-47dd-803b-60a6eb9f87cc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HeaderFiles\Components">
-      <UniqueIdentifier>{1194a403-f66f-43c4-8922-880cc13174f5}</UniqueIdentifier>
-    </Filter>
     <Filter Include="HeaderFiles\Structures">
       <UniqueIdentifier>{f8da4b19-3732-4d51-b649-905ce6e69c13}</UniqueIdentifier>
     </Filter>
@@ -62,6 +59,9 @@
     </Filter>
     <Filter Include="SourceFiles\Physics\Shape">
       <UniqueIdentifier>{7a207218-1177-4b71-87d9-e7ccca48d54a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="HeaderFiles\DX11\Components">
+      <UniqueIdentifier>{1194a403-f66f-43c4-8922-880cc13174f5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -111,7 +111,7 @@
       <Filter>HeaderFiles\Scene</Filter>
     </ClInclude>
     <ClInclude Include="CameraComponent.h">
-      <Filter>HeaderFiles\Components</Filter>
+      <Filter>HeaderFiles\DX11\Components</Filter>
     </ClInclude>
     <ClInclude Include="ConstantStructure.h">
       <Filter>HeaderFiles\Structures</Filter>
@@ -129,7 +129,7 @@
       <Filter>HeaderFiles\Structures</Filter>
     </ClInclude>
     <ClInclude Include="Object.h">
-      <Filter>HeaderFiles\Components</Filter>
+      <Filter>HeaderFiles\DX11\Components</Filter>
     </ClInclude>
     <ClInclude Include="PixelShader.h">
       <Filter>HeaderFiles\DX11</Filter>
@@ -144,16 +144,16 @@
       <Filter>HeaderFiles\Structures</Filter>
     </ClInclude>
     <ClInclude Include="StaticCamera.h">
-      <Filter>HeaderFiles\Components</Filter>
+      <Filter>HeaderFiles\DX11\Components</Filter>
     </ClInclude>
     <ClInclude Include="Surface.h">
       <Filter>HeaderFiles\Structures</Filter>
     </ClInclude>
     <ClInclude Include="TextureComponent.h">
-      <Filter>HeaderFiles\Components</Filter>
+      <Filter>HeaderFiles\DX11\Components</Filter>
     </ClInclude>
     <ClInclude Include="Transformation.h">
-      <Filter>HeaderFiles\Components</Filter>
+      <Filter>HeaderFiles\DX11\Components</Filter>
     </ClInclude>
     <ClInclude Include="VertexShader.h">
       <Filter>HeaderFiles\DX11</Filter>
@@ -202,6 +202,9 @@
     </ClInclude>
     <ClInclude Include="Shapes.h">
       <Filter>HeaderFiles\Physics\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>HeaderFiles\DX11</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -272,6 +275,9 @@
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Shapes.cpp">
       <Filter>SourceFiles\Physics\Shape</Filter>
+    </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>SourceFiles\DX11</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

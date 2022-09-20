@@ -36,6 +36,7 @@
 
 #include "StaticCamera.h"
 
+#include "Model.h"
 
 //Allows us to easily call reference upon our DX naming conventions
 using namespace DirectX;
@@ -69,7 +70,7 @@ private:
 
 	Scene0* _pScene0;
 
-
+	std::vector< Model* > _Models;
 	StaticDefaultCamera* _StaticDefaultCamera;
 
 	DWORD dwTimeStart = 0;
