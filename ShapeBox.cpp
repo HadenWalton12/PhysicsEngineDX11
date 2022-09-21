@@ -118,7 +118,7 @@ Bounds ShapeBox::GetBounds(const Vec3& position, const Quat& orientation) const
 
 Bounds ShapeBox::GetBounds() const
 {
-	return Bounds();
+	return _Bounds;
 }
 
 //Will be used for CCD , takes in a direction and angular velocity of object and returns us the velocity of the vertex travelling the fastest in that direction
