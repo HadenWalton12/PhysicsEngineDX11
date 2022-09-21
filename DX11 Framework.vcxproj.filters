@@ -191,6 +191,9 @@
     <ClInclude Include="Body.h">
       <Filter>HeaderFiles\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="ShapeBox.h">
+      <Filter>HeaderFiles\Physics\Shapes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
@@ -241,6 +244,9 @@
     </ClCompile>
     <ClCompile Include="Body.cpp">
       <Filter>SourceFiles\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ShapeBox.cpp">
+      <Filter>SourceFiles\Physics\Shape</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

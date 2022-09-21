@@ -1,8 +1,8 @@
 #include "ShapeSphere.h"
-
-Shape::ShapeType ShapeSphere::GetType() const
+Vec3 ShapeSphere::Support(const Vec3& direction, const Vec3& position, const Quat& orientation , const float bias) const
 {
-	return _ShapeType;
+	//Direction is assumed to be normalised,  bias is used to shrink or expand the size of the shape, needed to calculate the contact normal
+	return (position + direction * (_Radius + bias));
 }
 
 Mat3 ShapeSphere::InertiaTensor()
@@ -14,6 +14,7 @@ Mat3 ShapeSphere::InertiaTensor()
 	Tensor.rows[1][1] = 2.0f * _Radius * _Radius / 5.0f;
 	Tensor.rows[2][2] = 2.0f * _Radius * _Radius / 5.0f;
 	return Tensor;
+
 }
 
 Bounds ShapeSphere::GetBounds(const Vec3& pos, const Quat& orient) const
