@@ -15,16 +15,16 @@ public:
 		Build(points, num);
 	}
 
-
-	void Build(const Vec3* points, const int num) override;
-
 	//This function will be used to support giving us the point on a given convex shape that is furthest in a particular direction
 	Vec3 Support(const Vec3& direction, const Vec3& position, const Quat& orientation, const float bias) const override;
+
+	void Build(const Vec3* points, const int num) override;
 
 	Mat3 InertiaTensor() override;
 
 	Bounds GetBounds(const Vec3& position, const Quat& orientation) const override;
 	Bounds GetBounds() const override;
+
 	ShapeType GetType() const override { return SHAPE_CONVEX; };
 	float FastestLinearSpeed(const Vec3& angular_velocity, const Vec3& direction) const override;
 private:
